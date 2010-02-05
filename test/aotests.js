@@ -65,20 +65,19 @@ $(document).ready(function() {
 
   module('outputs');
 
-  test('sphere power', function() {
-      expect(2);
+  test('Power Outputs', function() {
+      expect(3);
       $k1.val('40');
       $k2.val('42');
       
       $pow1.val('-3');
-      $pow2.val('-4.75');
+      $pow2.val('-2');
+      equals(FM.firstPower(), -3.5, 'Single lens: -3, adjust by .5 -> -3.5');
 
-      equals(FM.spherePower(), -8, '-3 + -4.75, converted to -4.5, adjust by .5 -> 8');
-
-      $pow1.val('-2');
-      $pow2.val('1.5');
-
-      equals(FM.spherePower(), -1, 'should be -1');
+      $k2.val('43');
+      equals(FM.firstPower(), -3, 'Toric lens: -3, no adjustment -> -3');
+      
+      equals(FM.secondPower(), -5, 'Bitoric lens: -3 + -2 -> -5');
       
     });
     

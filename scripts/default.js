@@ -2,7 +2,7 @@ $(document).ready(function() {
   
   $('form').submit(function(event) {
     event.preventDefault();
-    $('#result').html( FM.spherePower() );
+    $('#result').html( FM.firstPower() );
     
   });
 });

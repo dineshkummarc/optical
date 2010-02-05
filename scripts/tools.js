@@ -31,15 +31,22 @@ $(document).ready(function() {
       return +pow;
     },
     
-    spherePower: function() {
-      var powerAdd = this.power(this.pow1) + this.power(this.pow2);
-      var adjust = this.fittingAdjustment();
-      if (powerAdd < 0) {
-        powerAdd -= adjust;
-      } else {
-        powerAdd += adjust;
+    firstPower: function() {
+      var power = this.power(this.pow1);
+      
+      if ( this.lensType() == 'single') {
+        var adjust = this.fittingAdjustment();
+        if (power < 0) {
+          power -= adjust;
+        } else {
+          power += adjust;
+        }
       }
-      return powerAdd;
+      return power;
+    },
+    
+    secondPower: function() {
+      return this.power(this.pow1) + this.power(this.pow2);
     },
     
     // get value of Flat K or Steep K. (One param. Pass in either 'flat' or 'steep'. default is 'flat')
