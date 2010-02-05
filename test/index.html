@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Art Optical Tests</title>
+	<link rel="stylesheet" href="qunit.css" type="text/css" media="screen">
+	<link rel="stylesheet" href="aotests.css" type="text/css" media="screen, projection" />
+  <script src="jquery-1.4.js" type="text/javascript"></script>
+  <script type="text/javascript" src="qunit.js"></script>
+	<script type="text/javascript" src="aotests.js"></script>
+</head>
+<body>
+	<h1 id="qunit-header">Art Optical Tests</h1>
+	<h2 id="qunit-banner"></h2>
+	<div id="qunit-testrunner-toolbar"></div>
+	<h2 id="qunit-userAgent"></h2>
+	<ol id="qunit-tests"></ol>
+
+  <form id="convert" action="" method="post">
+    <div class="text">
+      <label for="firstk">First K Reading</label>
+      <input type="text" id="k1" name="firstk" />
+    </div>
+    <div class="text">
+      <label for="secondk">Second K Reading</label>
+      <input type="text" id="k2" name="secondk" />
+    </div>
+    <div class="text">
+      <label for="first_power">First Power</label>
+      <input type="text" id="pow1" name="first_power" />
+    </div>
+    <div class="text">
+      <label for="second_power">Second Power</label>
+      <input type="text" id="pow2" name="second_power" />
+    </div>
+    <div class="text">
+      <label for="axis">Axis</label>
+      <input type="text" id="axis" name="axis" />
+    </div>
+
+    <p><input type="submit" value="go" /></p>
+  </form>
+
+
+	<script type="text/javascript" src="../scripts/tools.js"></script>
+</body>
+</html>
