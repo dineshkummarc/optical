@@ -16,7 +16,7 @@ $(document).ready(function() {
     // get the Power. Convert vertex if necessary.
     power: function(el) {
       var pow = num(el);
-      
+
       if (math.abs(pow) < 4.25) {
         return pow;
       }
@@ -30,10 +30,10 @@ $(document).ready(function() {
      pow = utils.vertex[pow][adjust];
       return +pow;
     },
-    
+
     firstPower: function() {
       var power = this.power(this.pow1);
-      
+
       if ( this.lensType() == 'single') {
         var adjust = this.fittingAdjustment();
         if (power < 0) {
@@ -44,34 +44,35 @@ $(document).ready(function() {
       }
       return power;
     },
-    
+
+    // use this for bitoric only
     secondPower: function() {
       return this.power(this.pow1) + this.power(this.pow2);
     },
-    
+
     // get value of Flat K or Steep K. (One param. Pass in either 'flat' or 'steep'. default is 'flat')
     kvalue: function(type) {
       return math[type == 'steep' ? 'max' : 'min'] (num(fm.k1), num(fm.k2));
     },
-    
-    // get 
+
+    // get
     kdiff: function() {
       return math.abs( num(fm.k1) - num(fm.k2) );
     },
-    
+
     // determine whether single lens or toric (or bail on "front toric")
     lensType: function() {
-      var lens = 'consult';
+      var lens = 'front toric';
       var secondPower = math.abs( fm.power(fm.pow2) );
       if (math.abs(fm.kdiff() - secondPower) <= .75 && fm.kdiff() <= 2.5) {
         lens = 'single';
       } else if (fm.kdiff() > 2.5) {
         lens = 'toric';
-      } 
-      
+      }
+
       return lens;
     },
-    
+
     fittingAdjustment: function() {
       var kd = fm.kdiff();
       var adjustment = 0;
@@ -84,11 +85,32 @@ $(document).ready(function() {
       }
       return adjustment;
     },
-    
-    baseCurve: function() {
-      var radius = 337.5 / ( fm.kvalue('flat') + fm.fittingAdjustment() );
+
+    baseCurve: function(options) {
+      var defaults = {
+        position: 'first',
+        torictype: 'back',
+        units: 'radius'
+      };
+      var opts = $.extend({}, defaults, options);
+      
+      var diopters = fm.kvalue('flat') + fm.fittingAdjustment();
+      
+      if (opts.units == 'diopters') {
+        return diopters;
+      }
+      
+      if (opts.position == 'second') {
+        if (opts.torictype == 'bi') {
+          diopters = fm.kvalue('steep') - 1;
+        } else {
+          diopters = (this.power(this.pow2) / 1.5) + diopters;
+        }
+      }
+
+      var radius = 337.5 / ( diopters );
       radius = math.round(radius * 10) / 10;
-      return radius;
+      return radius;      
     },
     
     empiricalFitting: function() {
@@ -176,7 +198,7 @@ $(document).ready(function() {
     "34.5": {plus: 59.5, minus: -24.5},
     "35": {plus: 60.62, minus: -24.75}
   };
-  
+
   utils.empiricalFitting = {
     "7.1": {opticZone: 7.6, diameter: 9.0},
     "7.2": {opticZone: 7.6, diameter: 9.0},

@@ -2,43 +2,77 @@
 <html lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>Art Optical</title>
-  
+  <title>Art Optical Lens Calculations</title>
+  <link rel="stylesheet" href="styles/screen.css" type="text/css" media="screen, projection" />
 </head>
 <body>
-
-<p>Conversions</p>
-<form id="convert" action="" method="get">
-  <div class="text">
-    <label for="firstk">First K Reading</label>
-    <input type="text" id="k1" name="firstk" />
-  </div>
-  <div class="text">
-    <label for="secondk">Second K Reading</label>
-    <input type="text" id="k2" name="secondk" />
-  </div>
-  <div class="text">
-    <label for="first_power">First Power</label>
-    <input type="text" id="pow1" name="first_power" />
-  </div>
-  <div class="text">
-    <label for="second_power">Second Power</label>
-    <input type="text" id="pow2" name="second_power" />
-  </div>
-  <div class="text">
-    <label for="axis">Axis</label>
-    <input type="text" id="axis" name="axis" />
-  </div>
+<div class="wrapper">
+  <h2>Lens Calculations</h2>
+  <form id="convert" action="" method="get">
+    <div class="text">
+      <label for="k1">First K Reading</label>
+      <input class="required" type="text" id="k1" name="firstk" />
+    </div>
+    <div class="text">
+      <label for="k2">Second K Reading</label>
+      <input class="required" type="text" id="k2" name="secondk" />
+    </div>
+    <div class="text">
+      <label for="pow1">First Power</label>
+      <input class="required" type="text" id="pow1" name="first_power" />
+    </div>
+    <div class="text">
+      <label for="pow2">Second Power</label>
+      <input class="required" type="text" id="pow2" name="second_power" />
+    </div>
+    <div class="text">
+      <label for="axis">Axis</label>
+      <input type="text" id="axis" name="axis" />
+    </div>
+    <p><button type="submit" value="Continue"><span>Calculate</span></button></p>
   
-  <p><input type="submit" value="Continue &rarr;" /></p>
-</form>
+  </form>
 
-<div id="result">
+  <div id="results">
   
+    <div id="result-front-toric">
+      This appears to require a front-toric design. Pleasee consult Art Optical.
+    </div>
+  
+    <div id="result-single">
+      <h3>Single Lens Design</h3>
+      <div class="result-base-curve">Base Curve: <span></span></div>
+      <div class="result-first-power">Sphere Power: <span></span></div>
+      <div class="result-diameter">Diameter: <span></span></div>
+      <div class="result-optical-zone">Optical Zone: <span></span></div>
+    </div>
+
+    <div id="result-toric">
+      <div class="back">
+        <h3>Back Toric Lens Design</h3>
+        <div class="result-base-curve">First Base Curve: <span></span></div>
+        <div class="result-base-curve-2">Second Base Curve: <span></span></div>
+        <div class="result-first-power">First Power: <span></span></div>
+        <div class="result-diameter">Diameter: <span></span></div>
+        <div class="result-optical-zone">Optical Zone: <span></span></div>
+      </div>
+      <div class="bi">
+        <h3>Bi Toric Lens Design</h3>
+        <div class="result-base-curve">First Base Curve: <span></span></div>
+        <div class="result-base-curve-2">Second Base Curve: <span></span></div>
+        <div class="result-first-power">First Power: <span></span></div>
+        <div class="result-second-power">Second Power: <span></span></div>
+        <div class="result-diameter">Diameter: <span></span></div>
+        <div class="result-optical-zone">Optical Zone: <span></span></div>    
+      </div>
+      <br class="clear" />
+
+    </div>
+  </div>
 </div>
-
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js" type="text/javascript"></script>
 <script src="scripts/tools.js" type="text/javascript"></script>
+<script src="scripts/jquery.tinyvalidate.js" type="text/javascript"></script>
 <script src="scripts/default.js" type="text/javascript"></script>
 </body>
 </html>

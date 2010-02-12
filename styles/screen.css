@@ -1,0 +1,61 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	border-width: 0;
+}
+body {
+	font-family: helvetica, arial, sans-serif;
+	font-size: 13px;
+	line-height: 1.3em;
+	text-align: center;
+	background-color: #eee;
+}
+.wrapper {
+	text-align: left;
+	width: 640px;
+	background-color: #fff;
+	padding: 20px 0 20px 40px;
+	margin: 20px auto 0;
+	border: 1px solid #999;
+}
+form {
+	font-size: 13px;
+}
+div.text {
+	clear: left;
+	padding-top: .5em;
+}
+.text label {
+	float: left;
+	width: 180px;
+}
+
+#results {
+	min-height: 160px;
+}
+* html #results {
+	height: 160px;
+}
+#result-front-toric,
+#result-toric,
+#result-single {
+	display: none;
+}
+
+.back,
+.bi {
+	float: left;
+	width: 250px;
+}
+#results span {
+	font-weight: bold;
+}
+
+.clear {
+	clear: both;
+}
+
+.error-message {
+	padding-left: 8px;
+	color: #900;
+}
