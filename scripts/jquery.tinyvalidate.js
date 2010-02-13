@@ -190,7 +190,7 @@ $.fn.tinyvalidate = function(options) {
         return false;
       } else if (opts.submitOverride) {
         $form.tinyvalidate('removeErrors');
-        opts.submitOverride(opts);
+        opts.submitOverride.call($form[0], opts);
         return false;
       }
     });

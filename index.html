@@ -7,6 +7,23 @@
 </head>
 <body>
 <div class="wrapper">
+  
+  <h2>Vertex Adjustment</h2>
+  <form id="vertex" action="">
+    <p>Enter a number between 4 and 35, or between -35 and -4.</p>
+    <div class="text">
+      <label for="power">Power</label>
+      <input class="required range min-4 max-35" type="text" id="power" name="power" /><span></span>
+    </div>
+    <div class="actions">
+      <button type="submit" value="Continue"><span>Convert</span></button>
+    </div>
+    <div id="vertex-results" class="results">
+      <div class="power"></div>
+      <div class="vertex"></div>
+    </div>
+  </form>
+  
   <h2>Lens Calculations</h2>
   <form id="convert" action="" method="get">
     <div class="text">
@@ -29,11 +46,11 @@
       <label for="axis">Axis</label>
       <input type="text" id="axis" name="axis" />
     </div>
-    <p><button type="submit" value="Continue"><span>Calculate</span></button></p>
+    <div class="actions"><button type="submit" value="Continue"><span>Calculate</span></button></div>
   
   </form>
 
-  <div id="results">
+  <div id="convert-results" class="results">
   
     <div id="result-front-toric">
       This appears to require a front-toric design. Pleasee consult Art Optical.

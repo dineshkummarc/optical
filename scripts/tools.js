@@ -15,7 +15,7 @@ $(document).ready(function() {
 
     // get the Power. Convert vertex if necessary.
     power: function(el) {
-      var pow = num(el);
+      var pow = (typeof el == 'number') ? el : num(el);
 
       if (math.abs(pow) < 4.25) {
         return pow;
@@ -116,7 +116,17 @@ $(document).ready(function() {
     empiricalFitting: function() {
       var baseCurve = this.baseCurve();
       return utils.empiricalFitting[baseCurve];
+    },
+    round: function(num, increment) {
+      increment = increment*1;
+      num = '' + num;
+      
+      var integ = parseInt(num, 10);
+      var dec = (num.split('.')[1] || 0)/10;
+      return integ + (Math.round(dec / increment) * increment);
+
     }
+    
   };
 
   FM = fm;
@@ -217,5 +227,6 @@ $(document).ready(function() {
     "8.5": {opticZone: 8.3, diameter: 9.7},
     "8.6": {opticZone: 8.4, diameter: 9.8}
   };
+  FM.vertex = utils.vertex;
 });
 

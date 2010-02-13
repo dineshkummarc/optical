@@ -27,15 +27,26 @@ div.text {
 }
 .text label {
 	float: left;
-	width: 180px;
+	width: 160px;
 }
-
-#results {
+.text input {
+	width: 40px;
+}
+#vertex-results {
+	min-height: 36px;
+}
+#vertex .text label { width: 80px; }
+* html #vertex-results {
+	height: 36px;
+}
+#convert-results {
 	min-height: 160px;
 }
-* html #results {
+* html #convert-results {
 	height: 160px;
 }
+
+
 #result-front-toric,
 #result-toric,
 #result-single {
@@ -47,7 +58,10 @@ div.text {
 	float: left;
 	width: 250px;
 }
-#results span {
+.actions {
+	padding: 1em 0;
+}
+.results span {
 	font-weight: bold;
 }
 
