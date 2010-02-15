@@ -10,6 +10,7 @@ body {
 	text-align: center;
 	background-color: #eee;
 }
+
 .wrapper {
 	text-align: left;
 	width: 640px;
@@ -21,10 +22,16 @@ body {
 form {
 	font-size: 13px;
 }
+
 div.text {
 	clear: left;
 	padding-top: .5em;
 }
+
+div.radio-text {
+	clear: none;
+}
+.radios,
 .text label {
 	float: left;
 	width: 160px;
@@ -32,13 +39,16 @@ div.text {
 .text input {
 	width: 40px;
 }
-#vertex-results {
+#vertex-results,
+#dirad-results {
 	min-height: 36px;
 }
-#vertex .text label { width: 80px; }
-* html #vertex-results {
+* html #vertex-results,
+* html #dirad-results {
 	height: 36px;
 }
+#vertex .text label { width: 80px; }
+
 #convert-results {
 	min-height: 160px;
 }

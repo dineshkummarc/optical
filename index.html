@@ -10,17 +10,44 @@
   
   <h2>Vertex Adjustment</h2>
   <form id="vertex" action="">
-    <p>Enter a number between 4 and 35, or between -35 and -4.</p>
     <div class="text">
       <label for="power">Power</label>
       <input class="required range min-4 max-35" type="text" id="power" name="power" /><span></span>
     </div>
     <div class="actions">
-      <button type="submit" value="Continue"><span>Convert</span></button>
+      <button type="submit" value="Continue"><span>Adjust</span></button>
     </div>
     <div id="vertex-results" class="results">
       <div class="power"></div>
       <div class="vertex"></div>
+    </div>
+  </form>
+  
+  <h2>Diopter-Radius Conversion</h2>
+  <form id="dirad" action="">
+
+    <div>Convert from&hellip;</div>
+    <div class="radios">
+      <div class="radio">
+        <input type="radio" value="diopter" id="diopter" checked="checked" name="diradradio" />
+        <label for="diopter">Diopter</label>
+      </div>
+      <div class="radio">
+        <input type="radio" value="radius" id="radius" name="diradradio" />
+        <label for="radius">Radius</label>
+      </div>
+    </div>
+    
+    <div class="text radio-text">
+      <input class="required" type="text" id="rd" name="rd" />
+    </div>
+
+    <div class="actions">
+      <button type="submit" value="Continue"><span>Convert</span></button>
+    </div>
+    <div id="dirad-results" class="results">
+      <div class="diopter"></div>
+      <div class="radius"></div>
     </div>
   </form>
   

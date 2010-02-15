@@ -16,8 +16,8 @@ $(document).ready(function() {
     $k1.val('45.5');
     $k2.val('42');
     equal( FM.kdiff(), 3.5, 'kdiff 3.5' );
-
   });
+  
   test('Determine Flat K and Steep K values', function() {
     expect(2);
     $k1.val('45.5');
@@ -26,8 +26,21 @@ $(document).ready(function() {
     equal( FM.kvalue('steep'), 45.5, 'steep K is 45.5' );
   });
 
-  module('adjustments and conversions');
+  test('Round by increment', function() {
+    expect(4);
+    equal(FM.round(3.1523, .1), 3.2, 'round 3.1523 to nearest tenth');
+    equal(FM.round(3.1523, .01), 3.15, 'round 3.1523 to nearest hundredth');
+    equal(FM.round(4.789, .25), 4.75, 'round 4.789 to nearest quarter');
+    equal(FM.round(4.789, .5), 5, 'round 4.789 to nearest half');
+  });
   
+  module('adjustments and conversions');
+
+  test('diopter / radius conversion', function() {
+    equal(FM.round(FM.diopterRadiusConvert(23), .01), 14.67, '23 diopters -> mm');
+    
+  });
+
   test('vertex adjustment', function() {
     expect(3);
     $pow1.val('3');

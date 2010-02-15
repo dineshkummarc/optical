@@ -85,7 +85,16 @@ $(document).ready(function() {
       }
       return adjustment;
     },
-
+    
+    diopterRadiusConvert: function(val, roundto) {
+      val = parseFloat(val);
+      var radius = 337.5 / ( val );
+      if (roundto) {
+        radius = this.round(radius, roundto);
+      }
+      return radius;
+    },
+    
     baseCurve: function(options) {
       var defaults = {
         position: 'first',
@@ -108,21 +117,23 @@ $(document).ready(function() {
         }
       }
 
-      var radius = 337.5 / ( diopters );
-      radius = math.round(radius * 10) / 10;
-      return radius;      
+      /* return diopters converted to radius and rounded to nearest tenth  */
+      return this.diopterRadiusConvert( diopters, .1 );
+
     },
     
     empiricalFitting: function() {
       var baseCurve = this.baseCurve();
       return utils.empiricalFitting[baseCurve];
     },
+    
     round: function(num, increment) {
       increment = increment*1;
       num = '' + num;
       
       var integ = parseInt(num, 10);
-      var dec = (num.split('.')[1] || 0)/10;
+      var dec = (num.split('.')[1] || 0);
+      dec = parseFloat('.' + dec);
       return integ + (Math.round(dec / increment) * increment);
 
     }

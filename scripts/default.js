@@ -7,6 +7,25 @@ $(document).ready(function() {
   });
 
 
+  $('#dirad').tinyvalidate({
+    otherEvents: null,
+    submitOverride: function() {
+      var input = parseFloat($('#rd').val()),
+          from = $(this).find('input:radio:checked')[0].id,
+          increment = (from == 'diopter') ? .01 : .25;
+      
+      var output = {
+        raw: FM.diopterRadiusConvert(input),
+        rounded: FM.diopterRadiusConvert(input, increment),
+        label: (from == 'diopter') ? 'Radius: ' : "Diopter: ",
+        note: function() {
+          return (output.raw === output.rounded) ? 'no note' : ' (rounded to the nearest ' + increment + ')';
+        }
+      };
+      $('#dirad-results').html( output.label + '<span>' + output.rounded + '</span>' + output.note() );
+      
+    }
+  });
   $('#vertex').tinyvalidate({
     submitOverride: function() {
       var num = parseFloat( $('#power').val() ),
