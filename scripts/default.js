@@ -19,10 +19,10 @@ $(document).ready(function() {
         rounded: FM.diopterRadiusConvert(input, increment),
         label: (from == 'diopter') ? 'Radius: ' : "Diopter: ",
         note: function() {
-          return (output.raw === output.rounded) ? 'no note' : ' (rounded to the nearest ' + increment + ')';
+          return (output.raw === output.rounded) ? '' : ' (rounded to the nearest ' + increment + ')';
         }
       };
-      $('#dirad-results').html( output.label + '<span>' + output.rounded + '</span>' + output.note() );
+      $('#dirad-results').html( '<div>' + output.label + '<span>' + output.rounded + '</span>' + output.note() + '</div>');
       
     }
   });
@@ -102,6 +102,20 @@ $.tinyvalidate.rules.required = {
     return (/\S+/).test(r);
   },
   text: 'required field has no value'
+};
+
+$.tinyvalidate.rules.dirad = {
+  ruleClass: 'dirad',
+  rule: function(r) {
+    r = parseFloat(r);
+    if ( $('#diopter').is(':checked') && (r < 23 || r > 70) ) {
+      return false;
+    } else if ( $('#radius').is(':checked') && (r > 14.67 || r < 4.82) ) {
+      return false;
+    }
+    return true;
+  },
+  text: 'Out of range. Please call Art Optical for a consultation.'
 };
 
 $.tinyvalidate.rules.range = {

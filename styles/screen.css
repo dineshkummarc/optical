@@ -19,6 +19,13 @@ body {
 	margin: 20px auto 0;
 	border: 1px solid #999;
 }
+
+h1 {
+	margin-bottom: 2em;
+}
+h2 {
+	font-weight: normal;
+}
 form {
 	font-size: 13px;
 }

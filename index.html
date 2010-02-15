@@ -7,7 +7,7 @@
 </head>
 <body>
 <div class="wrapper">
-  
+  <h1>Art Optical</h1>
   <h2>Vertex Adjustment</h2>
   <form id="vertex" action="">
     <div class="text">
@@ -17,11 +17,11 @@
     <div class="actions">
       <button type="submit" value="Continue"><span>Adjust</span></button>
     </div>
-    <div id="vertex-results" class="results">
-      <div class="power"></div>
-      <div class="vertex"></div>
-    </div>
   </form>
+  <div id="vertex-results" class="results">
+    <div class="power"></div>
+    <div class="vertex"></div>
+  </div>
   
   <h2>Diopter-Radius Conversion</h2>
   <form id="dirad" action="">
@@ -39,17 +39,17 @@
     </div>
     
     <div class="text radio-text">
-      <input class="required" type="text" id="rd" name="rd" />
+      <input class="required dirad" type="text" id="rd" name="rd" />
     </div>
 
     <div class="actions">
       <button type="submit" value="Continue"><span>Convert</span></button>
     </div>
-    <div id="dirad-results" class="results">
-      <div class="diopter"></div>
-      <div class="radius"></div>
-    </div>
   </form>
+  <div id="dirad-results" class="results">
+    <div class="diopter"></div>
+    <div class="radius"></div>
+  </div>
   
   <h2>Lens Calculations</h2>
   <form id="convert" action="" method="get">
