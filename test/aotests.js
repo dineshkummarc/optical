@@ -54,17 +54,6 @@ $(document).ready(function() {
 
   });
   
-  test('base curve: adjusted kdiff (corneal cylinder) converted to radius (base curve, in mm)', function() {
-    expect(2);
-    $k1.val('40');
-    $k2.val('42');
-    equal(FM.baseCurve(), 8.3, 'flat k 40, kdiff 2 -> 8.4mm');
-    
-    $k1.val('40.25');
-    $k2.val('41');
-    equal(FM.baseCurve(), 8.4, 'flat k 40.25, kdiff .75 -> 8.4mm');
-
-  });
 
   module('outputs');
 
@@ -93,16 +82,28 @@ $(document).ready(function() {
     equal(FM.empiricalFitting().diameter, 9.6, 'diameter should be 9.6');
   });
   
+  test('first base curve: kdiff (corneal cylinder) converted to radius (base curve, in mm)', function() {
+    expect(2);
+    $k1.val('40');
+    $k2.val('42');
+    equal(FM.baseCurve(), 8.44, 'flat k 40 -> 8.44mm');
+    
+    $k1.val('41');
+    $k2.val('40.25');
+    equal(FM.baseCurve(), 8.39, 'flat k 40.25 -> 8.39mm');
+
+  });
+  
   test('Second Base Curve', function() {
     expect(4);
-    $k1.val('40');
-    $k2.val('43');
+    $k1.val('44');
+    $k2.val('48');
     $pow1.val('-3');
-    $pow2.val('-2');
-    equal(FM.kvalue('flat'), 40, 'flatk');
-    equal(FM.baseCurve({position: 'second', units: 'diopters'}), 40.75, 'diopters');
-    equal(FM.baseCurve({position: 'second'}), 8.6, 'second base curve for back toric should be 8.6');
-    equal(FM.baseCurve({position: 'second', torictype: 'bi'}), 8.0, 'second base curve for bi toric should be 8.0');
+    $pow2.val('-4');
+    equal(FM.baseCurve({position: 'second', units: 'diopters'}), 46.625, 'back toric (diopters)');
+    equal(FM.baseCurve({position: 'second'}), 7.24, 'back toric (mm)');
+    equal(FM.baseCurve({position: 'second', torictype: 'bi', units: 'diopters'}), 47, 'bi toric (diopters)');
+    equal(FM.baseCurve({position: 'second', torictype: 'bi'}), 7.18, 'bi toric (mm)');
   });
 
 });

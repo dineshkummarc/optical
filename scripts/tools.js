@@ -3,7 +3,7 @@ $(document).ready(function() {
   var utils = {};
   var math = Math;
   var num = function(el) {
-    return parseFloat(el.val());
+    return parseFloat(el.val() || 0);
   };
 
   var fm = {
@@ -47,6 +47,7 @@ $(document).ready(function() {
 
     // use this for bitoric only
     secondPower: function() {
+      // second power == cylinder power == spectacle cylinder
       return this.power(this.pow1) + this.power(this.pow2);
     },
 
@@ -103,38 +104,49 @@ $(document).ready(function() {
       };
       var opts = $.extend({}, defaults, options);
       
-      var diopters = fm.kvalue('flat') + fm.fittingAdjustment();
+      var diopters = fm.kvalue('flat'); // + fm.fittingAdjustment();
+            
+      if (opts.position == 'second') {
+        if (opts.torictype == 'bi') {
+          diopters = fm.kvalue('steep') - 1;
+        } else {
+          var p2 = num(this.pow2);
+          p2 = this.round(p2/1.5, .125);
+          p2 = math.abs(p2);
+          
+          diopters = p2 + diopters;
+
+        }
+      }
       
       if (opts.units == 'diopters') {
         return diopters;
       }
       
-      if (opts.position == 'second') {
-        if (opts.torictype == 'bi') {
-          diopters = fm.kvalue('steep') - 1;
-        } else {
-          diopters = (this.power(this.pow2) / 1.5) + diopters;
-        }
-      }
-
-      /* return diopters converted to radius and rounded to nearest tenth  */
-      return this.diopterRadiusConvert( diopters, .1 );
+      /* return diopters converted to radius and rounded to nearest hundredt  */
+      return this.diopterRadiusConvert( diopters, .01 );
 
     },
     
     empiricalFitting: function() {
-      var baseCurve = this.baseCurve();
+      var baseCurve = this.round(this.baseCurve(), .1);
       return utils.empiricalFitting[baseCurve];
     },
     
     round: function(num, increment) {
       increment = increment*1;
+      var pos = true;
+      if (+num < 0) {
+        pos = false;
+      }
       num = '' + num;
       
-      var integ = parseInt(num, 10);
+      var integ = math.abs(parseInt(num, 10));
       var dec = (num.split('.')[1] || 0);
       dec = parseFloat('.' + dec);
-      return integ + (Math.round(dec / increment) * increment);
+      
+      var rounded = integ + (Math.round(dec / increment) * increment);
+      return pos ? rounded : rounded * -1;
 
     }
     
