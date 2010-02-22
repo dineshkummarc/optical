@@ -6,7 +6,8 @@ $(document).ready(function() {
     $(this).next('div.results').children().hide();
   });
 
-
+/** =DIOPTER - RADIUS CONVERSION
+************************************************************/
   $('#dirad').tinyvalidate({
     otherEvents: null,
     submitOverride: function() {
@@ -26,6 +27,9 @@ $(document).ready(function() {
       
     }
   });
+
+/** =VERTEX CONVERSION
+************************************************************/
   $('#vertex').tinyvalidate({
     submitOverride: function() {
       var num = parseFloat( $('#power').val() ),
@@ -49,11 +53,35 @@ $(document).ready(function() {
     }
   });
   
-  
+/** =LENS CALCULATIONS
+************************************************************/
+
   $('#convert')
   .tinyvalidate({
     submitOverride: function() {
-
+      
+      /* show adjusted values */
+      /* start with clean slate */
+      $('span.adjusted').empty();
+      
+      /* prettify k readings */
+      $(this).find('input:text').each(function(index) {
+        var val = $(this).val();
+        var dp = 2;
+        if (/pow/.test(this.id)) {
+          /* get the power without converting the vertex */
+          val = FM.power($(this), false);
+        } else if (/axis/.test(this.id)) {
+          dp = 0;
+          val = FM.adjustedAxis();
+        }
+        
+        val = FM.displayNumber(val, {decimalPlaces: dp});
+        $(this).parent().find('span.adjusted').text(val);
+      });
+      
+      /* display results */
+      
       if (FM.lensType() == 'front toric') {
 
         var $context = $('#result-front-toric').fadeIn(200);
@@ -63,6 +91,8 @@ $(document).ready(function() {
         
         var $bi = $context.find('.bi'),
             $back = $context.find('.back');
+        
+        $back.toggle( FM.showBackToric() );
 
         $back.find('.result-base-curve-2 span').html( function() {
           return FM.baseCurve({
@@ -77,7 +107,8 @@ $(document).ready(function() {
           });
         });
         $bi.find('.result-second-power span').html( function() {
-          return FM.secondPower();
+          var secondPower = FM.secondPower();
+          return FM.displayNumber(secondPower);
         });
         
       } else {
@@ -85,7 +116,6 @@ $(document).ready(function() {
         var $context = $('#result-single').fadeIn(200);
 
       }
-      var bc = FM.baseCurve();
       $context.find('.result-base-curve span').html( function() { return FM.baseCurve(); } );
       $context.find('.result-first-power span').html( function() { return FM.firstPower(); } );
       $context.find('.result-diameter span').html( function() { return FM.empiricalFitting().diameter; } );
@@ -96,6 +126,8 @@ $(document).ready(function() {
   });
 
 });
+
+
 $.tinyvalidate.rules.required = {
   ruleClass: 'required',
   rule: function(r) {

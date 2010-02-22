@@ -15,11 +15,26 @@ $(document).ready(function() {
     axis: $('#axis'),
 
     // get the Power. Convert vertex if necessary.
-    power: function(el) {
+    power: function(el, convertVertex) {
+      if (typeof convertVertex == 'undefined') {
+        convertVertex = true;
+      }
+
+      var pow2 = num(this.pow2);
+      
       var pow = (typeof el == 'number') ? el : num(el);
+      if (pow2 > 0) {
+        if (el[0].id == 'pow1') {
+          pow += pow2;
+        } else if (el[0].id == 'pow2') {
+          pow = -pow;
+        }
+        
+      }
+      
       var adjust = 'plus';
 
-      if (math.abs(pow) < 4.25) {
+      if (math.abs(pow) < 4.25 || convertVertex === false) {
         return this.round(pow, .125);
       }
 
@@ -52,17 +67,25 @@ $(document).ready(function() {
 
     // get value of Flat K or Steep K. (One param. Pass in either 'flat' or 'steep'. default is 'flat')
     kvalue: function(type) {
-      return math[type == 'steep' ? 'max' : 'min'] (num(fm.k1), num(fm.k2));
+      return math[type == 'steep' ? 'max' : 'min'] (num(this.k1), num(this.k2));
     },
 
-    // get
     kdiff: function() {
-      return math.abs( num(fm.k1) - num(fm.k2) );
+      return math.abs( num(this.k1) - num(this.k2) );
     },
 
     // determine whether single lens or toric (or bail on "front toric")
     lensType: function() {
-      var lens = 'front toric';
+      var ax = this.adjustedAxis();
+      
+      // start out with a "front toric" lens, only if the axis is between 31 and 149; otherwise single
+      if (ax > 30 && ax < 150) {
+        var lens = 'front toric';
+      } else {
+        var lens = 'single';
+      }
+      
+      // now see if it's single or toric
       var secondPower = math.abs( fm.power(fm.pow2) );
       
       if (math.abs(fm.kdiff() - secondPower) <= .75 && fm.kdiff() <= 2.5) {
@@ -74,6 +97,27 @@ $(document).ready(function() {
       return lens;
     },
 
+    showBackToric: function() {
+      // only show back toric if it really is a toric lens.
+      if (this.lensType() !== 'toric') {
+        return false;
+      }
+      
+      // - need at least 1.25 diopters difference between base curves. 
+      var bcFirst = this.baseCurve({units: 'diopters'});
+      var bcSecond = this.baseCurve({units: 'diopters', position: 'second'});
+      
+
+
+      if (math.abs(bcSecond-bcFirst) < 1.25) {
+        return false;
+      }
+      // - 2nd base curve needs to be .75 diopters less than or equal to steep K reading
+      var steepK = this.kvalue('steep');
+      
+      return bcSecond - steepK <= -.75;
+    },
+    
     fittingAdjustment: function() {
       var kd = fm.kdiff();
       var adjustment = 0;
@@ -149,6 +193,44 @@ $(document).ready(function() {
       var rounded = integ + (Math.round(dec / increment) * increment);
       return pos ? rounded : rounded * -1;
 
+    },
+    
+    adjustedAxis: function() {
+      var axis = num(this.axis);
+      if (num(this.pow2) > 0) {
+        axis = axis <=90 ? axis + 90 : axis - 90;
+      }
+      return axis;
+    },
+    
+    /* prettify numbers for displaying on the page */
+    displayNumber: function(num, options) {
+      var defaults = {
+        decimalPlaces: 2,
+        plusSign: '+'
+      };
+      var opts = $.extend({}, defaults, options);
+      var trimTo = opts.decimalPlaces,
+          plusSign = opts.plusSign,
+          zeros = '';
+      
+      if (plusSign && num*1 > 0) {
+        num = plusSign + num;
+      } else {
+        num = '' + num;  
+      }
+      
+      var regTrim = new RegExp( '(\\.\\d{' + trimTo + '})\\d+' );
+      num = num.replace(regTrim, '$1');
+      
+      var point = num.indexOf('.');
+      var places = num.slice(point).length - 1;
+      while (places < trimTo) {
+        zeros += '0';
+        places++;
+      }
+      num += zeros ? '.' + zeros : '';
+      return num;
     }
     
   };

@@ -54,22 +54,27 @@
   <h2>Lens Calculations</h2>
   <form id="convert" action="" method="get">
     <div class="text">
+      <span class="adjusted"></span>
       <label for="k1">First K Reading</label>
       <input class="required" type="text" id="k1" name="firstk" />
     </div>
     <div class="text">
+      <span class="adjusted"></span>
       <label for="k2">Second K Reading</label>
       <input class="required" type="text" id="k2" name="secondk" />
     </div>
     <div class="text">
+      <span class="adjusted"></span>
       <label for="pow1">First Power</label>
       <input class="required" type="text" id="pow1" name="first_power" />
     </div>
     <div class="text">
+      <span class="adjusted"></span>
       <label for="pow2">Cylinder Power</label>
-      <input type="text" id="pow2" name="second_power" /> <span>(optional. if nothing is entered, assume a value of 0)</span>
+      <input type="text" id="pow2" name="second_power" />
     </div>
     <div class="text">
+      <span class="adjusted"></span>
       <label for="axis">Axis</label>
       <input type="text" id="axis" name="axis" />
     </div>
@@ -80,7 +85,7 @@
   <div id="convert-results" class="results">
   
     <div id="result-front-toric">
-      This appears to require a front-toric design. Pleasee consult Art Optical.
+      This appears to require a front-toric design. Please consult Art Optical.
     </div>
   
     <div id="result-single">
@@ -92,6 +97,15 @@
     </div>
 
     <div id="result-toric">
+      <div class="bi">
+        <h3>Bi Toric Lens Design</h3>
+        <div class="result-base-curve">First Base Curve: <span></span></div>
+        <div class="result-base-curve-2">Second Base Curve: <span></span></div>
+        <div class="result-first-power">First Power: <span></span></div>
+        <div class="result-second-power">Second Power: <span></span></div>
+        <div class="result-diameter">Diameter: <span></span></div>
+        <div class="result-optical-zone">Optical Zone: <span></span></div>    
+      </div>
       <div class="back">
         <h3>Back Toric Lens Design</h3>
         <div class="result-base-curve">First Base Curve: <span></span></div>
@@ -100,21 +114,13 @@
         <div class="result-diameter">Diameter: <span></span></div>
         <div class="result-optical-zone">Optical Zone: <span></span></div>
       </div>
-      <div class="bi">
-        <h3>Bi Toric Lens Design</h3>
-        <div class="result-base-curve">First Base Curve: <span></span></div>
-        <div class="result-base-curve-2">Second Base Curve: <span></span></div>
-        <div class="result-first-power">First Power: <span></span></div>
-        <div class="result-second-power">Cylinder Power: <span></span></div>
-        <div class="result-diameter">Diameter: <span></span></div>
-        <div class="result-optical-zone">Optical Zone: <span></span></div>    
-      </div>
       <br class="clear" />
 
     </div>
   </div>
 </div>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js" type="text/javascript"></script>
+<script src="scripts/jquery.js" type="text/javascript"></script>
+
 <script src="scripts/tools.js" type="text/javascript"></script>
 <script src="scripts/jquery.tinyvalidate.js" type="text/javascript"></script>
 <script src="scripts/default.js" type="text/javascript"></script>

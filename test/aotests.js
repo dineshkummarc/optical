@@ -82,15 +82,19 @@ $(document).ready(function() {
     equal(FM.empiricalFitting().diameter, 9.6, 'diameter should be 9.6');
   });
   
-  test('first base curve: kdiff (corneal cylinder) converted to radius (base curve, in mm)', function() {
-    expect(2);
+  test('first base curve', function() {
+    expect(4);
     $k1.val('40');
     $k2.val('42');
-    equal(FM.baseCurve(), 8.44, 'flat k 40 -> 8.44mm');
+    $pow1.val('-3');
+    $pow2.val('-2');
+    equal(FM.lensType(), 'single', 'single lens');
+    equal(FM.baseCurve(), 8.33, 'flat k 40 -> 8.33mm');
     
-    $k1.val('41');
-    $k2.val('40.25');
-    equal(FM.baseCurve(), 8.39, 'flat k 40.25 -> 8.39mm');
+    $k1.val('44');
+    $k2.val('46.75');
+    equal(FM.lensType(), 'toric', 'toric lens');
+    equal(FM.baseCurve(), 7.67, 'flat k 40.25 -> 7.67mm');
 
   });
   

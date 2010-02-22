@@ -1,0 +1,89 @@
+firstk=44&secondk=46&first_power=6.14&second_power=-2&axis=
+
+==Lens calculation form.==
+
+√ for front toric, need one more check: 
+  must also have axis between 31 and 149 
+...otherwise, it's a single lens
+
+
+for back toric, before we convert base curves to mm ...
+  - need at least 1.25 diopters difference between base curves. 
+  ??? - 2nd base curve needs to be .75 diopters less than or equal to steep K reading
+...otherwise don't show back toric
+
+
+
+√ power fields: round to nearest 1/8.
+
+√ **** fix js error when someone types 6.125 into first power field
+
+
+cylinder power must be < 0. 
+Otherwise: 
+√ 1. first power becomes first power + cylinder power. 
+√ 2. cylinder power == -cylinder power
+√ 3. axis = axis <=90 ? axis + 90 : axis -90;
+ 
+ 
+√ ** on calculate, show prettified/adjusted values next to each field
+√  - k readings, powers need to have two decimal places.
+  
+  
+==THINSITE==
+
+Same 5 inputs.
+start with same design/rules for single lens
+
+
+sam: steeper add minus
+fap: flatter add plus
+
+base curve needs to be rounded to nearest .05 increment
+
+
+order - 1. transpose, 2. vertex, 3. power
+
+example:
+first k: 39
+second k: 40
+first power: -3 -> -1
+secondpower: +2 -> -2
+axis: 90 -> 180
+
+  output:
+    diameter: 10
+    basecurve: 38.75
+    power: ??
+    
+
+==RENOVATION==
+
+New field: "Add Power"
+
+
+start with same design/rules for single lens
+no optical zone output. 
+
+renovationE
+
+
+
+43.25
+44.75
+-3
+-1.5
+180
++2
+
+
+
+==Envision==
+
+Not doing it.
+
+
+
+    
+    
+    
