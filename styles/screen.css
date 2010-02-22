@@ -33,7 +33,7 @@ form {
 div.text {
 	clear: left;
 	padding-top: .5em;
-	width: 260px;
+	width: 500px;
 }
 
 div.radio-text {
@@ -50,6 +50,7 @@ div.radio-text {
 
 .adjusted {
 	float: right;
+	padding-right: 240px;
 	line-height: 1.8em;
 }
 #vertex-results,
