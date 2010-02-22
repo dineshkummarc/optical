@@ -1,4 +1,5 @@
 var FM = {};
+
 $(document).ready(function() {
   var utils = {};
   var math = Math;
@@ -16,18 +17,20 @@ $(document).ready(function() {
     // get the Power. Convert vertex if necessary.
     power: function(el) {
       var pow = (typeof el == 'number') ? el : num(el);
+      var adjust = 'plus';
 
       if (math.abs(pow) < 4.25) {
-        return pow;
+        return this.round(pow, .125);
       }
-      var adjust = 'plus';
+
       if (pow < 0) {
         pow = ('' + pow).slice(1);
         adjust = 'minus';
       } else {
         pow = '' + pow;
       }
-     pow = utils.vertex[pow][adjust];
+      pow = this.round(pow, .25);
+      pow = utils.vertex[pow][adjust];
       return +pow;
     },
 
@@ -36,11 +39,7 @@ $(document).ready(function() {
 
       if ( this.lensType() == 'single') {
         var adjust = this.fittingAdjustment();
-        if (power < 0) {
-          power -= adjust;
-        } else {
-          power += adjust;
-        }
+        power -= adjust;
       }
       return power;
     },
@@ -65,6 +64,7 @@ $(document).ready(function() {
     lensType: function() {
       var lens = 'front toric';
       var secondPower = math.abs( fm.power(fm.pow2) );
+      
       if (math.abs(fm.kdiff() - secondPower) <= .75 && fm.kdiff() <= 2.5) {
         lens = 'single';
       } else if (fm.kdiff() > 2.5) {
@@ -115,8 +115,9 @@ $(document).ready(function() {
           p2 = math.abs(p2);
           
           diopters = p2 + diopters;
-
         }
+      } else if (this.lensType() == 'single' ) {
+        diopters += fm.fittingAdjustment();
       }
       
       if (opts.units == 'diopters') {
