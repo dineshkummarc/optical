@@ -231,11 +231,114 @@ $(document).ready(function() {
       }
       num += zeros ? '.' + zeros : '';
       return num;
-    }
+    },
     
+    thinsite: {},
+    renovation: {}
   };
 
+  /* THINSITE CALCULATIONS */
+
+  fm.thinsite.diameter = function() {
+    var diameter = 'out of range';
+    var flatk = fm.kvalue('flat');
+    if (flatk <= 39.25) {
+      diameter = 10;
+    } else if (flatk <= 42.5) {
+      diameter = 9.5;
+    } else if (flatk <= 45.5) {
+      diameter = 9;
+    }
+  
+    return diameter;
+  };
+  
+  fm.thinsite.flatkAdjustment = function() {
+    var diameter = fm.thinsite.diameter();
+    if (diameter == 'out of range') {
+      return 'out of range';
+    }
+    var kdiff = fm.kdiff(),
+        cylinderPosition = 3;
+  
+    if (kdiff <= .5) {
+      cylinderPosition = 0;
+    } else if (kdiff <= 1.25) {
+      cylinderPosition = 1;
+    } else if (kdiff <= 2) {
+      cylinderPosition = 2;
+    }
+
+    return utils.flatk.thinsite[diameter][cylinderPosition];
+  };
+  
+  fm.thinsite.baseCurve = function() {
+    var flatk = fm.kvalue('flat');
+    var adjustment = fm.thinsite.flatkAdjustment();
+    var basecurve = flatk + adjustment;
+    return  fm.diopterRadiusConvert(basecurve, .05);
+  };
+  
+  fm.thinsite.power = function() {
+    var pow = fm.power(fm.pow1);
+    var adjustment = fm.thinsite.flatkAdjustment();
+    return pow - adjustment;
+  };
+  
+  /* RENOVATION(E) CALCULATIONS */
+  fm.renovation.flatkAdjustment = function(e) {
+    var kdiff = fm.kdiff(),
+        adjustment = e ? 1 : .5;
+    
+    if (kdiff <= 1.25) {
+      adjustment = e ? .5 : 0;
+    } else if (kdiff <= 2.25) {
+      adjustment = e ? .75 : .25;
+    }
+    return adjustment;
+  };
+  fm.renovation.baseCurve = function(e) {
+    e = e || false;
+    var flatk = fm.kvalue('flat');
+    var adjustment = fm.renovation.flatkAdjustment(e);
+    var basecurve = flatk + adjustment;
+    return  fm.diopterRadiusConvert(basecurve);
+  };
+  
+  fm.renovation.diameter = function() {
+    var diameter = 'out of range';
+    var basecurve = fm.renovation.baseCurve();
+    if (basecurve < 6.9 || basecurve > 8.5) {
+      return diameter;
+    }
+    
+    if (basecurve <= 7.15) {
+      diameter = 9;
+    } else if (basecurve <= 7.45) {
+      diameter = 9.2;
+    } else if (basecurve <= 8.15) {
+      diameter = 9.5;
+    } else if (basecurve <= 8.4) {
+      diameter = 9.6;
+    } else if (basecurve <= 8.5) {
+      diameter = 10;
+    }
+  
+    return diameter;
+  };
+  
+  fm.renovation.nearAddPower = function() {
+    var addPower = num($('#addpower'));
+    
+    return addPower > 2.75 ? 3 : addPower + .25;
+  };
+  
+  
   FM = fm;
+
+/** =UTILITIES
+************************************************************/
+
 
   utils.vertex = {
     "4": {plus: 4.25, minus: -3.87},
@@ -333,6 +436,15 @@ $(document).ready(function() {
     "8.5": {opticZone: 8.3, diameter: 9.7},
     "8.6": {opticZone: 8.4, diameter: 9.8}
   };
+  utils.flatk = {
+    thinsite: {
+      "9": [-.25, 0, .25, .5],
+      "9.5": [-.5, -.25, 0, .25],
+      "10": [-.5, -.25, 0, .25]
+    }
+  };
+  
+  
   FM.vertex = utils.vertex;
 });
 
