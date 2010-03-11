@@ -8,33 +8,37 @@ $(document).ready(function() {
   };
 
   var fm = {
+    // standard field inputs
     k1: $('#k1'),
     k2: $('#k2'),
     pow1: $('#pow1'),
     pow2: $('#pow2'),
     axis: $('#axis'),
+    addpower: $('#addpower'),
 
     // get the Power. Convert vertex if necessary.
-    power: function(el, convertVertex) {
-      if (typeof convertVertex == 'undefined') {
-        convertVertex = true;
-      }
+    power: function(el, options) {
+      var defaults = {
+        convertVertex: true,
+        shiftPositive: true
+      };
 
-      var pow2 = num(this.pow2);
-      
-      var pow = (typeof el == 'number') ? el : num(el);
-      if (pow2 > 0) {
+      var opts = $.extend({}, defaults, options),
+          pow = (typeof el == 'number') ? el : num(el),
+          pow2 = num(this.pow2);
+
+      // shift for positive second power
+      if (pow2 > 0 && opts.shiftPositive) {
         if (el[0].id == 'pow1') {
           pow += pow2;
         } else if (el[0].id == 'pow2') {
           pow = -pow;
         }
-        
       }
       
       var adjust = 'plus';
 
-      if (math.abs(pow) < 4.25 || convertVertex === false) {
+      if (math.abs(pow) < 4.25 || opts.convertVertex === false) {
         return this.round(pow, .125);
       }
 
@@ -74,27 +78,48 @@ $(document).ready(function() {
       return math.abs( num(this.k1) - num(this.k2) );
     },
 
-    // determine whether single lens or toric (or bail on "front toric")
-    lensType: function() {
+    // determine the type of lens (single, toric, etc.)
+    lensType: function(special) {
+      special = special || 'standard';
       var ax = this.adjustedAxis();
       
-      // start out with a "front toric" lens, only if the axis is between 31 and 149; otherwise single
-      if (ax > 30 && ax < 150) {
-        var lens = 'front toric';
-      } else {
-        var lens = 'single';
-      }
-      
-      // now see if it's single or toric
-      var secondPower = math.abs( fm.power(fm.pow2) );
-      
-      if (math.abs(fm.kdiff() - secondPower) <= .75 && fm.kdiff() <= 2.5) {
-        lens = 'single';
-      } else if (fm.kdiff() > 2.5) {
-        lens = 'toric';
-      }
+      var lensTypes = {
+        standard: function() {
+          // start out with a "front toric" lens, only if the axis is between 31 and 149; 
+          // otherwise single
+          if (ax > 30 && ax < 150) {
+            var lens = 'front-toric';
+          } else {
+            var lens = 'single';
+          }
 
-      return lens;
+          // now see if it's single or toric
+          var secondPower = math.abs( fm.power(fm.pow2) );
+
+          if (math.abs(fm.kdiff() - secondPower) <= .75 && fm.kdiff() <= 2.5) {
+            lens = 'single';
+          } else if (fm.kdiff() > 2.5) {
+            lens = 'toric';
+          }
+          return lens;
+        },
+        intelliwave: function() {
+          var lens = fm.addpower.val() ? 'multifocal' : 'aspheric';
+          var secondPower = fm.power(fm.pow2, {convertVertex: false});
+          
+          if ( secondPower <= -.75 ) {
+            lens += '-toric';
+          }
+          return lens;
+        }
+      };
+
+      if (special in lensTypes) {
+        return lensTypes[special]();
+      } else {
+        return lensTypes['standard']();
+      }
+      
     },
 
     showBackToric: function() {
@@ -168,14 +193,17 @@ $(document).ready(function() {
         return diopters;
       }
       
-      /* return diopters converted to radius and rounded to nearest hundredt  */
+      /* return diopters converted to radius and rounded to nearest hundredth  */
       return this.diopterRadiusConvert( diopters, .01 );
 
     },
     
     empiricalFitting: function() {
+      var fitting = {opticZone: 'out of range', diameter: 'out of range'};
       var baseCurve = this.round(this.baseCurve(), .1);
-      return utils.empiricalFitting[baseCurve];
+      
+      $.extend(fitting, utils.empiricalFitting[baseCurve]);
+      return fitting;
     },
     
     round: function(num, increment) {
@@ -207,13 +235,18 @@ $(document).ready(function() {
     displayNumber: function(num, options) {
       var defaults = {
         decimalPlaces: 2,
-        plusSign: '+'
+        plusSign: '+',
+        suppressZero: false
       };
+
       var opts = $.extend({}, defaults, options);
       var trimTo = opts.decimalPlaces,
           plusSign = opts.plusSign,
           zeros = '';
       
+      if (opts.suppressZero && num == '') {
+        return '';
+      }
       if (plusSign && num*1 > 0) {
         num = plusSign + num;
       } else {
@@ -225,16 +258,20 @@ $(document).ready(function() {
       
       var point = num.indexOf('.');
       var places = num.slice(point).length - 1;
-      while (places < trimTo) {
+      
+      while (places++ < trimTo) {
         zeros += '0';
-        places++;
       }
-      num += zeros ? '.' + zeros : '';
-      return num;
+      if (point === -1 && opts.decimalPlaces) {
+        zeros = '.' + zeros;
+      }
+      return num + zeros;
     },
     
     thinsite: {},
-    renovation: {}
+    renovation: {},
+    intelliwave: {},
+    achievement: {}
   };
 
   /* THINSITE CALCULATIONS */
@@ -260,7 +297,6 @@ $(document).ready(function() {
     }
     var kdiff = fm.kdiff(),
         cylinderPosition = 3;
-  
     if (kdiff <= .5) {
       cylinderPosition = 0;
     } else if (kdiff <= 1.25) {
@@ -276,16 +312,26 @@ $(document).ready(function() {
     var flatk = fm.kvalue('flat');
     var adjustment = fm.thinsite.flatkAdjustment();
     var basecurve = flatk + adjustment;
-    return  fm.diopterRadiusConvert(basecurve, .05);
+    basecurve = fm.diopterRadiusConvert(basecurve, .05);
+
+    if (basecurve > 8.5 || basecurve < 7) {
+      return 'Base curve not available for this design. Contact Art Optical for consultation';
+    }
+    return basecurve;
   };
   
   fm.thinsite.power = function() {
     var pow = fm.power(fm.pow1);
     var adjustment = fm.thinsite.flatkAdjustment();
-    return pow - adjustment;
+    pow = pow - adjustment;
+    if (pow < -30 || pow > 20) {
+      return 'Power not available for this design. Contact Art Optical for consultation';
+    }
+    return pow;
   };
   
   /* RENOVATION(E) CALCULATIONS */
+  
   fm.renovation.flatkAdjustment = function(e) {
     var kdiff = fm.kdiff(),
         adjustment = e ? 1 : .5;
@@ -302,7 +348,10 @@ $(document).ready(function() {
     var flatk = fm.kvalue('flat');
     var adjustment = fm.renovation.flatkAdjustment(e);
     var basecurve = flatk + adjustment;
-    return  fm.diopterRadiusConvert(basecurve);
+    if (basecurve != 0) {
+      return  fm.diopterRadiusConvert(basecurve);      
+    }
+    return 0;
   };
   
   fm.renovation.diameter = function() {
@@ -326,11 +375,71 @@ $(document).ready(function() {
   
     return diameter;
   };
+
+  fm.renovation.firstpower = function(e) {
+    e = e || false;
+    
+    var pow = fm.power(fm.pow1);
+    var adjustment = fm.renovation.flatkAdjustment(e);
+    
+    return pow - adjustment;
+  };
   
   fm.renovation.nearAddPower = function() {
+    if ($('#addpower').val() === '') {
+      return '';
+    }
     var addPower = num($('#addpower'));
     
     return addPower > 2.75 ? 3 : addPower + .25;
+  };
+  
+  /** =INTELLIWAVE **/
+  
+  fm.intelliwave.baseCurve = function() {
+    var flatk = fm.kvalue('flat');
+    var baseCurve = fm.diopterRadiusConvert(flatk);
+    baseCurve = fm.round(baseCurve, .1);
+    baseCurve += 1;
+    
+    var secondPower = math.abs( fm.power(fm.pow2) ),
+        secondPower = math.floor(secondPower);
+    
+    if (secondPower >= 2) {
+      var powerDiff = (secondPower - 1) * .1;      
+      baseCurve -= powerDiff;
+    }
+    
+    return baseCurve;
+  };
+  
+  fm.intelliwave.power = function() {
+    var lenstype = fm.lensType('intelliwave');
+    var powerOptions = {shiftPositive: false, convertVertex: true};
+    var pow1 = fm.power(fm.pow1, powerOptions);
+    
+    
+    if ( lenstype.indexOf('toric') > -1 ) {
+      powerOptions.convertVertex = false;
+      var pow2 = fm.power(fm.pow2, powerOptions);
+      var adjustment = 0;
+
+      if (pow2 <= -5) {
+        adjustment = .75;
+      } else if (pow2 <= -2.75) {
+        adjustment = .5;
+      } else if (pow2 <= -2) {
+        adjustment = .25;
+      }
+      
+      pow2 += adjustment;
+      
+    } else {
+      var pow2 = fm.power(fm.pow2, powerOptions);  
+    }
+        
+    var powers = fm.displayNumber(pow1) + ' ' + fm.displayNumber(pow2);
+    return powers + ' x ' + fm.axis.val();
   };
   
   
@@ -439,7 +548,7 @@ $(document).ready(function() {
   utils.flatk = {
     thinsite: {
       "9": [-.25, 0, .25, .5],
-      "9.5": [-.5, -.25, 0, .25],
+      "9.5": [-.25, 0, .25, .5],
       "10": [-.5, -.25, 0, .25]
     }
   };

@@ -64,25 +64,30 @@ $(document).ready(function() {
       /* start with clean slate */
       $('span.adjusted').empty();
       
-      /* prettify k readings */
+      /* prettify form values (next to each input) */
       $(this).find('input:text').each(function(index) {
         var val = $(this).val();
-        var dp = 2;
+        var prettyOpts = {decimalPlaces: 2, plusSign: ''};
+        
         if (/pow/.test(this.id)) {
+          prettyOpts.plusSign = '+';
+          
           /* get the power without converting the vertex */
-          val = FM.power($(this), false);
+          val = FM.power( $(this), {convertVertex: false} );
+
         } else if (/axis/.test(this.id)) {
-          dp = 0;
+          prettyOpts.decimalPlaces = 0;
           val = FM.adjustedAxis();
+
         }
         
-        val = FM.displayNumber(val, {decimalPlaces: dp});
+        val = FM.displayNumber(val, prettyOpts);
         $(this).parent().find('span.adjusted').text(val);
       });
       
       /* display results */
       
-      if (FM.lensType() == 'front toric') {
+      if (FM.lensType() == 'front-toric') {
 
         var $context = $('#result-front-toric').fadeIn(200);
 
@@ -106,6 +111,7 @@ $(document).ready(function() {
             torictype: 'bi'
           });
         });
+        
         $bi.find('.result-second-power span').html( function() {
           var secondPower = FM.secondPower();
           return FM.displayNumber(secondPower);
@@ -117,7 +123,7 @@ $(document).ready(function() {
 
       }
       $context.find('.result-base-curve span').html( function() { return FM.baseCurve(); } );
-      $context.find('.result-first-power span').html( function() { return FM.firstPower(); } );
+      $context.find('.result-first-power span').html( function() { return FM.displayNumber( FM.firstPower() ); } );
       $context.find('.result-diameter span').html( function() { return FM.empiricalFitting().diameter; } );
       $context.find('.result-optical-zone span').html( function() { return FM.empiricalFitting().opticZone;} );
 

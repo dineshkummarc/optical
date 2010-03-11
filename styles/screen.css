@@ -73,7 +73,11 @@ div.radio-text {
 
 #result-front-toric,
 #result-toric,
-#result-single {
+#result-single,
+#result-aspheric,
+#result-aspheric-toric,
+#result-multifocal,
+#result-multifocal-toric {
 	display: none;
 }
 

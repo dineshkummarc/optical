@@ -13,30 +13,36 @@ $(document).ready(function() {
   $('#convert')
   .tinyvalidate({
     submitOverride: function() {
-      
       /* show adjusted values */
       /* start with clean slate */
       $('span.adjusted').empty();
       
-      /* prettify k readings */
+      /* prettify form values (next to each input) */
       $(this).find('input:text').each(function(index) {
         var val = $(this).val();
-        var dp = 2;
+        var prettyOpts = {decimalPlaces: 2, plusSign: ''};
+        
         if (/pow/.test(this.id)) {
+          prettyOpts.plusSign = '+';
+          
           /* get the power without converting the vertex */
-          val = FM.power($(this), false);
+          val = FM.power($(this), {convertVertex: false});
+          
+          if (this.id == 'addpower') {
+            prettyOpts.suppressZero = true;
+          }
         } else if (/axis/.test(this.id)) {
-          dp = 0;
+          prettyOpts.decimalPlaces = 0;
           val = FM.adjustedAxis();
         }
         
-        val = FM.displayNumber(val, {decimalPlaces: dp});
+        val = FM.displayNumber(val, prettyOpts);
         $(this).parent().find('span.adjusted').text(val);
       });
       
       /* display results */
       
-      if (FM.lensType() == 'front toric') {
+      if (FM.lensType() == 'front-toric') {
 
         var $context = $('#result-front-toric').fadeIn(200);
 
@@ -75,15 +81,16 @@ $(document).ready(function() {
       } else {
         // single lens
         var $context = $('#result-single').fadeIn(200);
-
       }
+      
       var e = $(this).hasClass('renovation-e');
+      
       $context.find('.result-base-curve span').html( function() { 
         var basecurve = FM.renovation.baseCurve(e); 
         basecurve = FM.round(basecurve, .01);
-        return FM.displayNumber(basecurve);
+        return FM.displayNumber(basecurve, {plusSign: ''});
       } );
-      $context.find('.result-first-power span').html( function() { return FM.firstPower(); } );
+      $context.find('.result-first-power span').html( function() { return FM.renovation.firstpower(e); } );
       $context.find('.result-diameter span').html( function() { return FM.renovation.diameter(); } );
       $context.find('.result-near-add-power span').html( function() { 
         var nearAdd = FM.renovation.nearAddPower(); 
@@ -112,7 +119,7 @@ $.tinyvalidate.rules.range = {
     var minmax = el[0].className.match(/min-(\d+).*?max-(\d+)/),
         val = parseFloat( el.val() ) || 0;
     val = Math.abs(val);
-    return minmax[1] * 1 <= val && minmax[2]*1 >= val;
+    return (minmax[1] * 1 <= val && minmax[2]*1 >= val) || el.val() == '';
   },
   text: function() {
     var minmax = this.className.match(/min-(\d+).*?max-(\d+)/);

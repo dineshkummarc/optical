@@ -9,8 +9,8 @@
 <div class="wrapper">
   <h1>Art Optical</h1>
   
-  <h2>Renovation Lens Calculations</h2>
-  <form id="convert" class="renovation" action="" method="get">
+  <h2>Intelliwave Lens Calculations</h2>
+  <form id="convert" class="intelliwave" action="" method="get">
     <div class="text">
       <span class="adjusted"></span>
       <label for="k1">First K Reading</label>
@@ -42,44 +42,40 @@
       <input class="range min-1 max-3" type="text" id="addpower" name="add_power" />
     </div>
     <div class="actions"><button type="submit" value="Continue"><span>Calculate</span></button></div>
-  
   </form>
 
   <div id="convert-results" class="results">
   
-    <div id="result-front-toric">
-      This appears to require a front-toric design. Please consult Art Optical.
-    </div>
-  
-    <div id="result-single">
-      <h3>Single Lens Design</h3>
+    <div id="result-aspheric">
+      <h3>Aspheric Lens Design</h3>
       <div class="result-base-curve">Base Curve: <span></span></div>
-      <div class="result-diameter">Diameter: <span></span></div>
-      <div class="result-first-power">Distance Power: <span></span></div>
+      <div class="result-diameter">Diameter: <span>14.5</span></div>
+      <div class="result-power">Power: <span></span></div>
+    </div>
+
+    <div id="result-aspheric-toric">
+      <h3>Aspheric Toric Lens Design</h3>
+      <div class="result-base-curve">Base Curve: <span></span></div>
+      <div class="result-diameter">Diameter: <span>14.5</span></div>
+      <div class="result-power">Power: <span></span></div>
+    </div>
+
+    <div id="result-multifocal">
+      <h3>Multifocal Lens Design</h3>
+      <div class="result-base-curve">Base Curve: <span></span></div>
+      <div class="result-diameter">Diameter: <span>14.5</span></div>
+      <div class="result-power">Power: <span></span></div>
       <div class="result-near-add-power">Add Power: <span></span></div>    
     </div>
 
-    <div id="result-toric">
-      <div class="bi">
-        <h3>Bi Toric Lens Design</h3>
-        <div class="result-base-curve">First Base Curve: <span></span></div>
-        <div class="result-base-curve-2">Second Base Curve: <span></span></div>
-        <div class="result-diameter">Diameter: <span></span></div>
-        <div class="result-first-power">Distance Power: <span></span></div>
-        <div class="result-second-power">Second Power: <span></span></div>
-        <div class="result-near-add-power">Add Power: <span></span></div>    
-      </div>
-      <div class="back">
-        <h3>Back Toric Lens Design</h3>
-        <div class="result-base-curve">First Base Curve: <span></span></div>
-        <div class="result-base-curve-2">Second Base Curve: <span></span></div>
-        <div class="result-diameter">Diameter: <span></span></div>
-        <div class="result-first-power">Distance Power: <span></span></div>
-        <div class="result-near-add-power">Add Power: <span></span></div>
-      </div>
-      <br class="clear" />
-
+    <div id="result-multifocal-toric">
+      <h3>Multifocal Toric Lens Design</h3>
+      <div class="result-base-curve">Base Curve: <span></span></div>
+      <div class="result-diameter">Diameter: <span>14.5</span></div>
+      <div class="result-power">Power: <span></span></div>
+      <div class="result-near-add-power">Add Power: <span></span></div>    
     </div>
+    
   </div>
 </div>
 <script src="scripts/jquery.js" type="text/javascript"></script>

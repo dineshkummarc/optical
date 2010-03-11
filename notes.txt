@@ -1,3 +1,16 @@
+On forms: 
+  - No plus/minus for K Readings or Axis (next to form fields)
+  - Renovation(E):  No plus/minus for Base Curve output 
+
+
+renovation(e): 
+44
+46.5
+-7
+-2
+2
+
+
 firstk=44&secondk=46&first_power=6.14&second_power=-2&axis=
 
 ==Lens calculation form.==

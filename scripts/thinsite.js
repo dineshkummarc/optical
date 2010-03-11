@@ -20,20 +20,21 @@ $(document).ready(function() {
       
       /* prettify k readings */
       $(this).find('input:text').each(function(index) {
+        
         var val = $(this).val();
-        var dp = 2;
+        var prettyOpts = {decimalPlaces: 2, plusSign: ''};
         if (/pow/.test(this.id)) {
           /* get the power without converting the vertex */
-          val = FM.power($(this), false);
+          val = FM.power($(this), {convertVertex: false});
         } else if (/axis/.test(this.id)) {
-          dp = 0;
+          prettyOpts.decimalPlaces = 0;
           val = FM.adjustedAxis();
         }
         
-        val = FM.displayNumber(val, {decimalPlaces: dp});
+        val = FM.displayNumber(val, prettyOpts);
         $(this).parent().find('span.adjusted').text(val);
       });
-      
+            
       /* display results */
       
       if (FM.lensType() != 'single') {

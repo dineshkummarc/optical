@@ -3,7 +3,8 @@ $(document).ready(function() {
       $k2 = $('#k2'),
       $pow1 = $('#pow1'),
       $pow2 = $('#pow2'),
-      $axis = $('#axis');
+      $axis = $('#axis'),
+      $addpower = $('#addpower');
 
   module("basics");
   test("Difference between K values", function () {
@@ -41,13 +42,13 @@ $(document).ready(function() {
     
   });
 
-  test('vertex adjustment', function() {
+  test('power with vertex adjustment', function() {
     expect(3);
     $pow1.val('3');
-    $pow2.val('4.75');
+    $pow2.val('-4.75');
 
     equal(FM.power($pow1), 3, 'Set 3, get 3');
-    equal(FM.power($pow2), 5, 'Set 4.75, get 5');
+    equal(FM.power($pow2), -4.5, 'Set -4.75, get -4.5');
 
     $pow1.val('-5.25');
     equal(FM.power($pow1), -5, 'Set -5.25, get -5');
@@ -110,5 +111,37 @@ $(document).ready(function() {
     equal(FM.baseCurve({position: 'second', torictype: 'bi'}), 7.18, 'bi toric (mm)');
   });
 
+  module('IntelliWave');
+  
+  test('Base Curve', function() {
+    expect(2);
+    $k1.val('45');
+    $k2.val('46');
+    $pow1.val('-3');
+    $pow2.val('-2');
+    $axis.val('180');
+    
+    equal(FM.intelliwave.baseCurve(), 8.4, 'basecurve 1');
+    
+    $pow2.val('-3');
+    
+    equal(FM.intelliwave.baseCurve(), 8.3, 'basecurve 2');
+
+  });
+  
+  test('Lens Type', function() {
+    expect(4);
+
+    $pow2.val('-.5');
+    $addpower.val('');
+    equal(FM.lensType('intelliwave'), 'aspheric', 'aspheric lens');
+    
+    $pow2.val('-.75');
+
+    equal(FM.lensType('intelliwave'), 'aspheric', 'aspheric lens');
+    
+    
+  });
+  
 });
 
