@@ -101,3 +101,11 @@ div.radio-text {
 	padding-left: 8px;
 	color: #900;
 }
+
+.nav {
+	text-align: center;
+	padding: 20px 0;
+}
+.nav a {
+	margin: 0 4px;
+}
