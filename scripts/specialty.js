@@ -40,7 +40,7 @@ $(document).ready(function() {
     });
 
   };
-  
+
   /** =FORM OUTPUT VALUES
   ************************************************************/
   FM.forms = {
@@ -51,7 +51,7 @@ $(document).ready(function() {
         {
           name: 'base-curve',
           value: function() {
-            return FM.thinsite.baseCurve();
+            return FM.displayNumber(FM.thinsite.baseCurve(), {plusSign: ''});
           }
         },
         {
@@ -69,12 +69,12 @@ $(document).ready(function() {
       ]
     },
     renovation: {
-      
+
       outputs: [
         {
           name: 'base-curve',
           value: function(e) {
-            var basecurve = FM.renovation.baseCurve(e); 
+            var basecurve = FM.renovation.baseCurve(e);
             basecurve = FM.round(basecurve, .01);
             return FM.displayNumber(basecurve, {plusSign: ''});
           }
@@ -86,28 +86,28 @@ $(document).ready(function() {
           }
         },
         {
-          name: 'diameter', 
+          name: 'diameter',
           value: function() {
             return FM.renovation.diameter();
           }
         },
         {
           name: 'near-add-power',
-          value: function() { 
-            var nearAdd = FM.renovation.nearAddPower(); 
+          value: function() {
+            var nearAdd = FM.renovation.nearAddPower();
             return FM.displayNumber(nearAdd);
           }
         }
-        
+
       ],
       toricCalcs: function() {
         var $bi   = $('#result-toric').find('.bi'),
             $back = $('#result-toric').find('.back');
-        
+
         $back.toggle( FM.showBackToric() );
 
         /* calculate results */
-        
+
         $back.find('.result-base-curve-2 span').html( function() {
           var bc2 = FM.baseCurve({
             position: 'second'
@@ -124,12 +124,12 @@ $(document).ready(function() {
           bc2 = FM.round(bc2, .01);
           return FM.displayNumber(bc2, {plusSign: ''});
         });
-        
+
         $bi.find('.result-second-power span').html( function() {
           var secondPower = FM.secondPower();
           return FM.displayNumber(secondPower);
         });
-        
+
       }
     },
     intelliwave: {
@@ -153,7 +153,7 @@ $(document).ready(function() {
         {
           name: 'near-add-power',
           value: function() {
-            
+
             var nearAdd =  FM.addpower.val();
             return FM.displayNumber(nearAdd, {suppressZero: true});
           }
@@ -165,45 +165,44 @@ $(document).ready(function() {
         {
           name: 'base-curve',
           value: function() {
-            var basecurve = FM.achievement.baseCurve(); 
+            var basecurve = FM.thinsite.baseCurve({design: 'achievement'});
             basecurve = FM.round(basecurve, .01);
             return FM.displayNumber(basecurve, {plusSign: ''});
           }
         },
         {
-          name: 'first-power',
-          value: function(e) {
-            return FM.renovation.firstpower();
+          name: 'power',
+          value: function() {
+            return FM.thinsite.power({design: 'achievement'});
           }
         },
         {
-          name: 'diameter', 
+          name: 'diameter',
           value: 9.5
         }
-      
+
       ]
     }
   };
-  
 
   /** =DISPLAY FORM RESULTS
   ************************************************************/
   FM.forms['renovation-e'] = FM.forms.renovation;
-    
+
   FM.formResults = function(formClass) {
     if (!FM.forms[formClass] ) { return; }
     var context = FM.forms[formClass][ FM.lensType() ] || FM.lensType(formClass);
     var $context = $('#result-' + context);
     var outputs = FM.forms[formClass].outputs;
     var e = $(this).hasClass('renovation-e');
-    
+
 
     $context.fadeIn(200);
-    
+
     for (var i=0; i < outputs.length; i++) {
-      
-      var output = $.isFunction( outputs[i].value ) 
-        ? outputs[i].value(e) 
+
+      var output = $.isFunction( outputs[i].value )
+        ? outputs[i].value(e)
         : outputs[i].value;
 
       $context.find('div.result-' + outputs[i].name + ' span').html( output );
@@ -212,19 +211,19 @@ $(document).ready(function() {
     /* deal with special case: renovation toric lenses */
     if (/renovation/.test(formClass) && context == 'toric') {
       FM.forms.renovation.toricCalcs();
-    }    
+    }
   };
-  
+
   /** =VALIDATE SUBMISSION
   ************************************************************/
-  
+
   $('#convert')
   .tinyvalidate({
     submitOverride: function() {
 
       /* prettify fields */
       FM.formPrettify();
-      
+
       /* display results */
       var thisClass = this.className == 'renovation-e' ? 'renovation' : this.className;
       FM.formResults(thisClass);
@@ -243,11 +242,23 @@ $.tinyvalidate.rules.required = {
   text: 'required field has no value'
 };
 
+$.tinyvalidate.rules.kreading = {
+  ruleClass: 'kreading',
+  rule: function(r) {
+    r = parseFloat(r);
+    return r <= 50 && r >= 39;
+  },
+  text: function() {
+    return  parseFloat(this.value) > 50 
+        ? 'This cornea may have keratoconus. Please contact Art Optical for a consultation.'
+        : 'This cornea may be post surgical. Please contact Art Optical for a consultation.';
+  }
+};
 
 $.tinyvalidate.rules.range = {
   ruleClass: 'range',
   rule: function(el) {
-    
+
     var minmax = el[0].className.match(/min-(\d+).*?max-(\d+)/),
         val = parseFloat( el.val() ) || 0;
     val = Math.abs(val);

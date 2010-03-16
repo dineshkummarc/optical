@@ -1,3 +1,5 @@
+
+
 On forms: 
   - No plus/minus for K Readings or Axis (next to form fields)
   - Renovation(E):  No plus/minus for Base Curve output 
@@ -89,11 +91,6 @@ renovationE
 180
 +2
 
-
-
-==Envision==
-
-Not doing it.
 
 
 

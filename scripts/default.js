@@ -36,7 +36,7 @@ $(document).ready(function() {
           increment = .25,
           plusorminus = num < 0 ? 'minus' : 'plus';
 
-      if (num >= 9.875) {
+      if (Math.abs(num) >= 9.875) {
         var increment = .5;
       }
 
@@ -45,6 +45,9 @@ $(document).ready(function() {
 
 
       var vertex = FM.power(power);
+      power = FM.displayNumber(power);
+      vertex = FM.displayNumber(vertex);
+      
       var $context = $('#vertex-results');
       $context.children().fadeIn(200);
       $context.find('.power').html(powerMsg + ': <span>' + power + '</span>');
@@ -100,16 +103,20 @@ $(document).ready(function() {
         $back.toggle( FM.showBackToric() );
 
         $back.find('.result-base-curve-2 span').html( function() {
-          return FM.baseCurve({
+          var bc = FM.baseCurve({
             position: 'second'
           });
+          
+          return FM.displayNumber(bc, {plusSign: ''});
         });
 
         $bi.find('.result-base-curve-2 span').html( function() {
-          return FM.baseCurve({
+          var bc = FM.baseCurve({
             position: 'second',
             torictype: 'bi'
           });
+          
+          return FM.displayNumber(bc, {plusSign: ''});
         });
         
         $bi.find('.result-second-power span').html( function() {
@@ -122,10 +129,18 @@ $(document).ready(function() {
         var $context = $('#result-single').fadeIn(200);
 
       }
-      $context.find('.result-base-curve span').html( function() { return FM.baseCurve(); } );
-      $context.find('.result-first-power span').html( function() { return FM.displayNumber( FM.firstPower() ); } );
-      $context.find('.result-diameter span').html( function() { return FM.empiricalFitting().diameter; } );
-      $context.find('.result-optical-zone span').html( function() { return FM.empiricalFitting().opticZone;} );
+      $context.find('.result-base-curve span').html( function() { 
+        return FM.displayNumber(FM.baseCurve(), {plusSign: ''});
+      } );
+      $context.find('.result-first-power span').html( function() { 
+        return FM.displayNumber( FM.firstPower() ); 
+      } );
+      $context.find('.result-diameter span').html( function() { 
+        return FM.empiricalFitting().diameter; 
+      } );
+      $context.find('.result-optical-zone span').html( function() {
+        return FM.empiricalFitting().opticZone;
+      } );
 
       
     }
@@ -153,7 +168,19 @@ $.tinyvalidate.rules.dirad = {
     }
     return true;
   },
-  text: 'Out of range. Please call Art Optical for a consultation.'
+  text: 'Out of range. Please contact Art Optical for a consultation.'
+};
+$.tinyvalidate.rules.kreading = {
+  ruleClass: 'kreading',
+  rule: function(r) {
+    r = parseFloat(r);
+    return r <= 50 && r >= 39;
+  },
+  text: function() {
+    return  parseFloat(this.value) > 50 
+        ? 'This cornea may have keratoconus. Please contact Art Optical for a consultation.'
+        : 'This cornea may be post surgical. Please contact Art Optical for a consultation.';
+  }
 };
 
 $.tinyvalidate.rules.range = {

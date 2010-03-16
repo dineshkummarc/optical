@@ -199,7 +199,7 @@ $(document).ready(function() {
     },
     
     empiricalFitting: function() {
-      var fitting = {opticZone: 'out of range', diameter: 'out of range'};
+      var fitting = {opticZone: 'Out of range', diameter: 'Out of range'};
       var baseCurve = this.round(this.baseCurve(), .1);
       
       $.extend(fitting, utils.empiricalFitting[baseCurve]);
@@ -252,7 +252,7 @@ $(document).ready(function() {
       } else {
         num = '' + num;  
       }
-      
+
       var regTrim = new RegExp( '(\\.\\d{' + trimTo + '})\\d+' );
       num = num.replace(regTrim, '$1');
       
@@ -277,7 +277,7 @@ $(document).ready(function() {
   /* THINSITE CALCULATIONS */
 
   fm.thinsite.diameter = function() {
-    var diameter = 'out of range';
+    var diameter = 'Out of range';
     var flatk = fm.kvalue('flat');
     if (flatk <= 39.25) {
       diameter = 10;
@@ -290,10 +290,11 @@ $(document).ready(function() {
     return diameter;
   };
   
-  fm.thinsite.flatkAdjustment = function() {
+ 
+  fm.thinsite.baseCurveAdjustment = function() {
     var diameter = fm.thinsite.diameter();
-    if (diameter == 'out of range') {
-      return 'out of range';
+    if (diameter == 'Out of range') {
+      return 'Out of range';
     }
     var kdiff = fm.kdiff(),
         cylinderPosition = 3;
@@ -308,9 +309,12 @@ $(document).ready(function() {
     return utils.flatk.thinsite[diameter][cylinderPosition];
   };
   
-  fm.thinsite.baseCurve = function() {
+  /* Calculate base curve for Thinsite *OR ACHIEVEMENT*  */
+  fm.thinsite.baseCurve = function(options) {
+    var opts = $.extend({design: 'thinsite'}, options);
+    
     var flatk = fm.kvalue('flat');
-    var adjustment = fm.thinsite.flatkAdjustment();
+    var adjustment = fm[opts.design].baseCurveAdjustment();
     var basecurve = flatk + adjustment;
     basecurve = fm.diopterRadiusConvert(basecurve, .05);
 
@@ -320,11 +324,14 @@ $(document).ready(function() {
     return basecurve;
   };
   
-  fm.thinsite.power = function() {
+  fm.thinsite.power = function(options) {
+    var opts = $.extend({design: 'thinsite'}, options);
+    
     var pow = fm.power(fm.pow1);
-    var adjustment = fm.thinsite.flatkAdjustment();
+    var adjustment = fm[opts.design].baseCurveAdjustment();
+
     pow = pow - adjustment;
-    if (pow < -30 || pow > 20) {
+    if (pow < -30 || pow > 20 || isNaN(pow)) {
       return 'Power not available for this design. Contact Art Optical for consultation';
     }
     return pow;
@@ -332,7 +339,7 @@ $(document).ready(function() {
   
   /* RENOVATION(E) CALCULATIONS */
   
-  fm.renovation.flatkAdjustment = function(e) {
+  fm.renovation.baseCurveAdjustment = function(e) {
     var kdiff = fm.kdiff(),
         adjustment = e ? 1 : .5;
     
@@ -346,7 +353,7 @@ $(document).ready(function() {
   fm.renovation.baseCurve = function(e) {
     e = e || false;
     var flatk = fm.kvalue('flat');
-    var adjustment = fm.renovation.flatkAdjustment(e);
+    var adjustment = fm.renovation.baseCurveAdjustment(e);
     var basecurve = flatk + adjustment;
     if (basecurve != 0) {
       return  fm.diopterRadiusConvert(basecurve);      
@@ -355,7 +362,7 @@ $(document).ready(function() {
   };
   
   fm.renovation.diameter = function() {
-    var diameter = 'out of range';
+    var diameter = 'Out of range';
     var basecurve = fm.renovation.baseCurve();
     if (basecurve < 6.9 || basecurve > 8.5) {
       return diameter;
@@ -380,7 +387,7 @@ $(document).ready(function() {
     e = e || false;
     
     var pow = fm.power(fm.pow1);
-    var adjustment = fm.renovation.flatkAdjustment(e);
+    var adjustment = fm.renovation.baseCurveAdjustment(e);
     
     return pow - adjustment;
   };
@@ -398,18 +405,25 @@ $(document).ready(function() {
   
   fm.intelliwave.baseCurve = function() {
     var flatk = fm.kvalue('flat');
-    var baseCurve = fm.diopterRadiusConvert(flatk);
-    baseCurve = fm.round(baseCurve, .1);
-    baseCurve += 1;
+    var toric = fm.lensType('intelliwave').indexOf('toric') > -1;
     
-    var secondPower = math.abs( fm.power(fm.pow2) ),
+    var baseCurve = fm.diopterRadiusConvert(flatk);
+    
+    baseCurve = fm.round(baseCurve, .1);
+    
+    baseCurve += 1;
+ 
+    var secondPower = math.abs( fm.power(fm.pow2, {
+       convertVertex: !toric,
+       shiftPositive: false
+     }) ),
         secondPower = math.floor(secondPower);
     
     if (secondPower >= 2) {
-      var powerDiff = (secondPower - 1) * .1;      
+      var powerDiff = (secondPower - 1) * .1;
+      
       baseCurve -= powerDiff;
     }
-    
     return baseCurve;
   };
   
@@ -442,6 +456,22 @@ $(document).ready(function() {
     return powers + ' x ' + fm.axis.val();
   };
   
+  fm.achievement.baseCurveAdjustment = function() {
+    var kdiff = fm.kdiff(),
+        adjustment = 'Out of range';
+    
+    /* FIXME: verify plus and minus in these adjustments... */
+    if (kdiff <= .25) {
+      adjustment = .25;
+    } else if (kdiff <= 1) {
+      adjustment = 0;
+    } else if (kdiff <= 1.75) {
+      adjustment = -.25;
+    } else if (kdiff < 2.5) {
+      adjustment = -.5;
+    }
+    return adjustment;
+  };
   
   FM = fm;
 
@@ -528,22 +558,22 @@ $(document).ready(function() {
   };
 
   utils.empiricalFitting = {
-    "7.1": {opticZone: 7.6, diameter: 9.0},
-    "7.2": {opticZone: 7.6, diameter: 9.0},
-    "7.3": {opticZone: 7.6, diameter: 9.0},
-    "7.4": {opticZone: 7.7, diameter: 9.1},
-    "7.5": {opticZone: 7.7, diameter: 9.1},
-    "7.6": {opticZone: 7.8, diameter: 9.2},
-    "7.7": {opticZone: 7.9, diameter: 9.3},
-    "7.8": {opticZone: 7.9, diameter: 9.3},
-    "7.9": {opticZone: 8.0, diameter: 9.4},
-    "8.0": {opticZone: 8.1, diameter: 9.5},
-    "8.1": {opticZone: 8.1, diameter: 9.5},
-    "8.2": {opticZone: 8.1, diameter: 9.5},
-    "8.3": {opticZone: 8.2, diameter: 9.6},
-    "8.4": {opticZone: 8.2, diameter: 9.6},
-    "8.5": {opticZone: 8.3, diameter: 9.7},
-    "8.6": {opticZone: 8.4, diameter: 9.8}
+    "7.1": {opticZone: "7.6", diameter: "9.0"},
+    "7.2": {opticZone: "7.6", diameter: "9.0"},
+    "7.3": {opticZone: "7.6", diameter: "9.0"},
+    "7.4": {opticZone: "7.7", diameter: "9.1"},
+    "7.5": {opticZone: "7.7", diameter: "9.1"},
+    "7.6": {opticZone: "7.8", diameter: "9.2"},
+    "7.7": {opticZone: "7.9", diameter: "9.3"},
+    "7.8": {opticZone: "7.9", diameter: "9.3"},
+    "7.9": {opticZone: "8.0", diameter: "9.4"},
+    "8":   {opticZone: "8.1", diameter: "9.5"},
+    "8.1": {opticZone: "8.1", diameter: "9.5"},
+    "8.2": {opticZone: "8.1", diameter: "9.5"},
+    "8.3": {opticZone: "8.2", diameter: "9.6"},
+    "8.4": {opticZone: "8.2", diameter: "9.6"},
+    "8.5": {opticZone: "8.3", diameter: "9.7"},
+    "8.6": {opticZone: "8.4", diameter: "9.8"}
   };
   utils.flatk = {
     thinsite: {
