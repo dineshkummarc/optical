@@ -456,6 +456,7 @@ $(document).ready(function() {
     return powers + ' x ' + fm.axis.val();
   };
   
+  /* ACHIEVEMENT */
   fm.achievement.baseCurveAdjustment = function() {
     var kdiff = fm.kdiff(),
         adjustment = 'Out of range';
@@ -474,6 +475,7 @@ $(document).ready(function() {
   };
   
   FM = fm;
+
 
 /** =UTILITIES
 ************************************************************/

@@ -69,7 +69,6 @@ $(document).ready(function() {
       ]
     },
     renovation: {
-
       outputs: [
         {
           name: 'base-curve',
@@ -189,13 +188,14 @@ $(document).ready(function() {
   ************************************************************/
   FM.forms['renovation-e'] = FM.forms.renovation;
 
-  FM.formResults = function(formClass) {
+  FM.formResults = function() {
+    var e = (/renovation-e/).test(this.className);
+    var formClass = e ? 'renovation' : this.className;
+    
     if (!FM.forms[formClass] ) { return; }
     var context = FM.forms[formClass][ FM.lensType() ] || FM.lensType(formClass);
     var $context = $('#result-' + context);
     var outputs = FM.forms[formClass].outputs;
-    var e = $(this).hasClass('renovation-e');
-
 
     $context.fadeIn(200);
 
@@ -225,8 +225,7 @@ $(document).ready(function() {
       FM.formPrettify();
 
       /* display results */
-      var thisClass = this.className == 'renovation-e' ? 'renovation' : this.className;
-      FM.formResults(thisClass);
+      FM.formResults.call(this);
 
     }
   });
