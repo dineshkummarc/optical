@@ -5,7 +5,6 @@ $(document).ready(function() {
       $pow2 = $('#pow2'),
       $axis = $('#axis'),
       $addpower = $('#addpower');
-
   module("basics");
   test("Difference between K values", function () {
 	  expect(2);
@@ -135,13 +134,51 @@ $(document).ready(function() {
     $pow2.val('-.5');
     $addpower.val('');
     equal(FM.lensType('intelliwave'), 'aspheric', 'aspheric lens');
+    $addpower.val('2');
+    equal(FM.lensType('intelliwave'), 'multifocal', 'multi-focal lens');
     
     $pow2.val('-.75');
-
-    equal(FM.lensType('intelliwave'), 'aspheric', 'aspheric lens');
-    
+    $addpower.val('');
+    equal(FM.lensType('intelliwave'), 'aspheric-toric', 'aspheric toric lens');
+    $addpower.val('2');
+    equal(FM.lensType('intelliwave'), 'multifocal-toric', 'multi-focal toric lens');
     
   });
-  
+  module('renovationE');
+
+  test('Steps', function() {
+    $k1.val('45');
+    $k2.val('46');
+    $pow1.val('-1');
+    $pow2.val('-1');
+    $axis.val('180');
+    $addpower.val('2');
+
+    expect(4);
+    equal(FM.kvalue('flat'), 45, 'Flat K Reading');
+    equal(FM.kdiff(), 1, 'K Difference');
+    equal(FM.renovation.baseCurveAdjustment(true), .5, 'Base Curve Adjustment (steeper)');
+    var baseCurveDiopters = FM.kvalue('flat') + FM.renovation.baseCurveAdjustment(true);
+    equal(baseCurveDiopters, 45.5, 'Base Curve in Diopters after adjustment');
+  });
+
+  test('Raw Output', function() {
+    $k1.val('45');
+    $k2.val('46');
+    $pow1.val('-1');
+    $pow2.val('-1');
+    $axis.val('180');
+    $addpower.val('2');
+
+    expect(4);
+    equal(FM.renovation.baseCurve(true), 7.4, 'Base Curve');
+    equal(FM.renovation.diameter(true), 9.2, 'Diameter');
+    equal(FM.renovation.firstpower(true), -1.5, 'Distance Power');
+    equal(FM.renovation.nearAddPower(), 2.25, 'Add Power');
+    
+  });
+  test('Formatted Output', function() {
+    
+  });
 });
 

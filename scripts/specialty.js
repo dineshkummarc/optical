@@ -16,19 +16,28 @@ $(document).ready(function() {
     $('span.adjusted').empty();
 
     /* prettify form values (next to each input) */
+    var $form = $('#convert'), 
+        options = {convertVertex: true},
+        formClass = $form.attr('class');
 
-    $('#convert').find('input:text').each(function(index) {
+    /* IF TORIC INTELLIWAVE, CONVERT VERTEX should be FALSE */
+    if ( formClass == 'intelliwave' ) {
+      options.convertVertex = !/toric/.test( FM.lensType(formClass) );
+    }
+
+    // set all options for pretty-printing next to inputs
+    $form.find('input:text').each(function(index) {
       var val = $(this).val();
       var prettyOpts = {decimalPlaces: 2, plusSign: ''};
 
       if (/pow/.test(this.id)) {
         prettyOpts.plusSign = '+';
-
-        /* get the power without converting the vertex */
-        val = FM.power( $(this), {convertVertex: false} );
-
+        
         if (this.id == 'addpower') {
           prettyOpts.suppressZero = true;
+        } else {
+          /* get the power  */
+          val = FM.power( $(this),  options);
         }
       } else if (/axis/.test(this.id)) {
         prettyOpts.decimalPlaces = 0;
@@ -51,20 +60,23 @@ $(document).ready(function() {
         {
           name: 'base-curve',
           value: function() {
-            return FM.displayNumber(FM.thinsite.baseCurve(), {plusSign: ''});
-          }
+            return FM.thinsite.baseCurve();
+          },
+          displayOptions: {plusSign: ''}
         },
         {
           name: 'diameter',
           value: function() {
             return FM.thinsite.diameter();
-          }
+          },
+          displayOptions: {decimalPlaces: 1, plusSign: ''}
         },
         {
           name: 'power',
           value: function() {
             return FM.thinsite.power();
-          }
+          },
+          displayOptions: {}
         }
       ]
     },
@@ -74,28 +86,30 @@ $(document).ready(function() {
           name: 'base-curve',
           value: function(e) {
             var basecurve = FM.renovation.baseCurve(e);
-            basecurve = FM.round(basecurve, .01);
-            return FM.displayNumber(basecurve, {plusSign: ''});
-          }
+            return FM.round(basecurve, .01);
+          },
+          displayOptions: {plusSign: ''}
         },
         {
           name: 'first-power',
           value: function(e) {
             return FM.renovation.firstpower(e);
-          }
+          },
+          displayOptions: {}
         },
         {
           name: 'diameter',
-          value: function() {
-            return FM.renovation.diameter();
-          }
+          value: function(e) {
+            return FM.renovation.diameter(e);
+          },
+          displayOptions: {}
         },
         {
           name: 'near-add-power',
           value: function() {
-            var nearAdd = FM.renovation.nearAddPower();
-            return FM.displayNumber(nearAdd);
-          }
+            return FM.renovation.nearAddPower();
+          },
+          displayOptions: {}
         }
 
       ],
@@ -147,15 +161,15 @@ $(document).ready(function() {
           name: 'power',
           value: function() {
             return FM.intelliwave.power();
-          }
+          },
+          displayOptions: {}
         },
         {
           name: 'near-add-power',
           value: function() {
-
-            var nearAdd =  FM.addpower.val();
-            return FM.displayNumber(nearAdd, {suppressZero: true});
-          }
+            return FM.addpower.val();
+          },
+          displayOptions: {suppressZero: true}
         }
       ]
     },
@@ -165,15 +179,16 @@ $(document).ready(function() {
           name: 'base-curve',
           value: function() {
             var basecurve = FM.thinsite.baseCurve({design: 'achievement'});
-            basecurve = FM.round(basecurve, .01);
-            return FM.displayNumber(basecurve, {plusSign: ''});
-          }
+            return FM.round(basecurve, .01);
+          },
+          displayOptions: {plusSign: ''}
         },
         {
           name: 'power',
           value: function() {
             return FM.thinsite.power({design: 'achievement'});
-          }
+          },
+          displayOptions: {}
         },
         {
           name: 'diameter',
@@ -205,6 +220,9 @@ $(document).ready(function() {
         ? outputs[i].value(e)
         : outputs[i].value;
 
+      if (outputs[i].displayOptions) {
+        output = FM.displayNumber(output, outputs[i].displayOptions);
+      }
       $context.find('div.result-' + outputs[i].name + ' span').html( output );
     }
 

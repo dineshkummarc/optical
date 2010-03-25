@@ -50,6 +50,7 @@ $(document).ready(function() {
       }
       pow = this.round(pow, .25);
       pow = utils.vertex[pow][adjust];
+
       return +pow;
     },
 
@@ -315,6 +316,9 @@ $(document).ready(function() {
     
     var flatk = fm.kvalue('flat');
     var adjustment = fm[opts.design].baseCurveAdjustment();
+    if ( isNaN(parseFloat(adjustment)) ) {
+      return 'Diameter cannot be calculated (base curve out of range)';
+    }
     var basecurve = flatk + adjustment;
     basecurve = fm.diopterRadiusConvert(basecurve, .05);
 
@@ -324,6 +328,7 @@ $(document).ready(function() {
     return basecurve;
   };
   
+  /* Calculate power for Thinsite *OR ACHIEVEMENT*  */
   fm.thinsite.power = function(options) {
     var opts = $.extend({design: 'thinsite'}, options);
     
@@ -334,6 +339,7 @@ $(document).ready(function() {
     if (pow < -30 || pow > 20 || isNaN(pow)) {
       return 'Power not available for this design. Contact Art Optical for consultation';
     }
+    
     return pow;
   };
   
@@ -350,20 +356,22 @@ $(document).ready(function() {
     }
     return adjustment;
   };
+  
   fm.renovation.baseCurve = function(e) {
     e = e || false;
     var flatk = fm.kvalue('flat');
     var adjustment = fm.renovation.baseCurveAdjustment(e);
     var basecurve = flatk + adjustment;
     if (basecurve != 0) {
-      return  fm.diopterRadiusConvert(basecurve);      
+      return  fm.diopterRadiusConvert(basecurve, .05);      
     }
     return 0;
   };
   
-  fm.renovation.diameter = function() {
+  fm.renovation.diameter = function(e) {
+    e = e || false;
     var diameter = 'Out of range';
-    var basecurve = fm.renovation.baseCurve();
+    var basecurve = fm.renovation.baseCurve(e);
     if (basecurve < 6.9 || basecurve > 8.5) {
       return diameter;
     }
@@ -386,6 +394,7 @@ $(document).ready(function() {
   fm.renovation.firstpower = function(e) {
     e = e || false;
     
+    /* FIXME: are we supposed to convert vertext here????? */
     var pow = fm.power(fm.pow1);
     var adjustment = fm.renovation.baseCurveAdjustment(e);
     
@@ -393,10 +402,10 @@ $(document).ready(function() {
   };
   
   fm.renovation.nearAddPower = function() {
-    if ($('#addpower').val() === '') {
+    if (fm.addpower.val() === '') {
       return '';
     }
-    var addPower = num($('#addpower'));
+    var addPower = num(fm.addpower);
     
     return addPower > 2.75 ? 3 : addPower + .25;
   };
