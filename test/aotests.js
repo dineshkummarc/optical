@@ -177,8 +177,6 @@ $(document).ready(function() {
     equal(FM.renovation.nearAddPower(), 2.25, 'Add Power');
     
   });
-  test('Formatted Output', function() {
-    
-  });
+  
 });
 

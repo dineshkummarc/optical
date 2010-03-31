@@ -49,6 +49,7 @@ $(document).ready(function() {
         pow = '' + pow;
       }
       pow = this.round(pow, .25);
+      
       pow = utils.vertex[pow][adjust];
 
       return +pow;
@@ -268,6 +269,16 @@ $(document).ready(function() {
       }
       return num + zeros;
     },
+    roundingAdjustment: function(pow) {
+       // for specialty lenses, "adjust the adjusted adjustment" (Bryan Lewis, March 31, 2010).
+       // need to round "up" (salmon flap) to nearest .25, so previously rounded .12 increment needs to be bumped by .01
+        if (pow > 0) {
+          pow += .01;
+        } else {
+          pow -= .01;
+        }
+        return this.round(pow, .25);
+    },
     
     thinsite: {},
     renovation: {},
@@ -339,8 +350,8 @@ $(document).ready(function() {
     if (pow < -30 || pow > 20 || isNaN(pow)) {
       return 'Power not available for this design. Contact Art Optical for consultation';
     }
-    
-    return pow;
+
+    return fm.roundingAdjustment(pow);
   };
   
   /* RENOVATION(E) CALCULATIONS */
@@ -363,7 +374,7 @@ $(document).ready(function() {
     var adjustment = fm.renovation.baseCurveAdjustment(e);
     var basecurve = flatk + adjustment;
     if (basecurve != 0) {
-      return  fm.diopterRadiusConvert(basecurve, .05);      
+      return  fm.diopterRadiusConvert(basecurve, .05);
     }
     return 0;
   };
@@ -372,7 +383,11 @@ $(document).ready(function() {
     e = e || false;
     var diameter = 'Out of range';
     var basecurve = fm.renovation.baseCurve(e);
-    if (basecurve < 6.9 || basecurve > 8.5) {
+    
+    var tooFlat = basecurve < 6.9,
+        tooSteep = e ? basecurve > 9 : basecurve > 8.5;
+
+    if (tooFlat || tooSteep) {
       return diameter;
     }
     
@@ -391,14 +406,19 @@ $(document).ready(function() {
     return diameter;
   };
 
+  // firstpower (aka distance power)
   fm.renovation.firstpower = function(e) {
     e = e || false;
     
     /* FIXME: are we supposed to convert vertext here????? */
     var pow = fm.power(fm.pow1);
     var adjustment = fm.renovation.baseCurveAdjustment(e);
+
+    // subtract adjustment from power
+    pow -= adjustment;
     
-    return pow - adjustment;
+    // round "up" to nearest .25
+    return fm.roundingAdjustment(pow);
   };
   
   fm.renovation.nearAddPower = function() {
@@ -407,7 +427,7 @@ $(document).ready(function() {
     }
     var addPower = num(fm.addpower);
     
-    return addPower > 2.75 ? 3 : addPower + .25;
+    return addPower > 2.5 ? 3 : addPower + .5;
   };
   
   /** =INTELLIWAVE **/
@@ -460,7 +480,11 @@ $(document).ready(function() {
     } else {
       var pow2 = fm.power(fm.pow2, powerOptions);  
     }
-        
+    
+    // round "up" to nearest .25
+    pow1 = fm.roundingAdjustment(pow1);
+    pow2 = fm.roundingAdjustment(pow2);
+    
     var powers = fm.displayNumber(pow1) + ' ' + fm.displayNumber(pow2);
     return powers + ' x ' + fm.axis.val();
   };
