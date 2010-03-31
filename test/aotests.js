@@ -144,7 +144,7 @@ $(document).ready(function() {
     equal(FM.lensType('intelliwave'), 'multifocal-toric', 'multi-focal toric lens');
     
   });
-  module('renovationE');
+  module('renovationE Steps');
 
   test('Steps', function() {
     $k1.val('45');
@@ -162,7 +162,9 @@ $(document).ready(function() {
     equal(baseCurveDiopters, 45.5, 'Base Curve in Diopters after adjustment');
   });
 
-  test('Raw Output', function() {
+  module('renovation / RenovationE');
+    
+  test('Raw Output E (inputs: 45, 46, -1, -1, 180, 2)', function() {
     $k1.val('45');
     $k2.val('46');
     $pow1.val('-1');
@@ -174,7 +176,37 @@ $(document).ready(function() {
     equal(FM.renovation.baseCurve(true), 7.4, 'Base Curve');
     equal(FM.renovation.diameter(true), 9.2, 'Diameter');
     equal(FM.renovation.firstpower(true), -1.5, 'Distance Power');
-    equal(FM.renovation.nearAddPower(), 2.25, 'Add Power');
+    equal(FM.renovation.nearAddPower(), 2.5, 'Add Power');
+    
+  });
+  
+  test('Raw Output 2 (inputs: 44, 46.75, -3, -1, 180, 1.5)', function() {
+    $k1.val('44');
+    $k2.val('46.75');
+    $pow1.val('-3');
+    $pow2.val('-1');
+    $axis.val('180');
+    $addpower.val('1.5');
+
+    expect(3);
+    equal(FM.renovation.baseCurve(), 7.6, 'Base Curve');
+    equal(FM.renovation.firstpower(), -3.5, 'Distance Power');
+    equal(FM.renovation.nearAddPower(), 2, 'Add Power');
+    
+  });
+  
+  test('Raw Output 2 E (inputs: 44, 46.75, -3, -1, 180, 1.5)', function() {
+    $k1.val('44');
+    $k2.val('46.75');
+    $pow1.val('-3');
+    $pow2.val('-1');
+    $axis.val('180');
+    $addpower.val('1.5');
+
+    expect(3);
+    equal(FM.renovation.baseCurve(true), 7.5, 'Base Curve');
+    equal(FM.renovation.firstpower(true), -4, 'Distance Power');
+    equal(FM.renovation.nearAddPower(), 2, 'Add Power');
     
   });
   
