@@ -182,6 +182,15 @@ $.tinyvalidate.rules.kreading = {
         : 'This cornea may be post surgical. Please contact Art Optical for a consultation.';
   }
 };
+$.tinyvalidate.rules.kreading2 = {
+  ruleClass: 'kreading',
+  rule: function(r) {
+    var k1val = parseFloat( $('#k1').val() ) || 0;
+    var k2val = parseFloat( $('#k2').val() ) || 0;
+    return Math.min(k1val, k2val) < 48;
+  },
+  text: 'This cornea may have keratoconus. Please contact Art Optical for a consultation.'
+};
 
 $.tinyvalidate.rules.range = {
   ruleClass: 'range',
