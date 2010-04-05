@@ -192,7 +192,7 @@ $(document).ready(function() {
         },
         {
           name: 'diameter',
-          value: 9.5
+          value: 9.4
         }
 
       ]

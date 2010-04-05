@@ -210,6 +210,9 @@ $(document).ready(function() {
     
     round: function(num, increment) {
       increment = increment*1;
+      if (isNaN(parseFloat(num))) {
+        return num;
+      }
       var pos = true;
       if (+num < 0) {
         pos = false;
@@ -334,7 +337,7 @@ $(document).ready(function() {
     basecurve = fm.diopterRadiusConvert(basecurve, .05);
 
     if (basecurve > 8.5 || basecurve < 7) {
-      return 'Base curve not available for this design. Contact Art Optical for consultation';
+      return 'Base curve not available for this design. Contact Art Optical for consultation.';
     }
     return basecurve;
   };
@@ -496,13 +499,13 @@ $(document).ready(function() {
     
     /* FIXME: verify plus and minus in these adjustments... */
     if (kdiff <= .25) {
-      adjustment = .25;
+      adjustment = -.25;
     } else if (kdiff <= 1) {
       adjustment = 0;
     } else if (kdiff <= 1.75) {
-      adjustment = -.25;
+      adjustment = .25;
     } else if (kdiff < 2.5) {
-      adjustment = -.5;
+      adjustment = .5;
     }
     return adjustment;
   };
