@@ -102,7 +102,7 @@ $(document).ready(function() {
           value: function(e) {
             return FM.renovation.diameter(e);
           },
-          displayOptions: {}
+          displayOptions: {plusSign: ''}
         },
         {
           name: 'near-add-power',

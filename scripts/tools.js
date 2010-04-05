@@ -243,8 +243,8 @@ $(document).ready(function() {
         plusSign: '+',
         suppressZero: false
       };
-
       var opts = $.extend({}, defaults, options);
+      
       var trimTo = opts.decimalPlaces,
           plusSign = opts.plusSign,
           zeros = '';
@@ -252,6 +252,7 @@ $(document).ready(function() {
       if (opts.suppressZero && num == '') {
         return '';
       }
+      num = parseFloat(num);
       if (plusSign && num*1 > 0) {
         num = plusSign + num;
       } else {
