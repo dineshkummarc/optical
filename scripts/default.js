@@ -58,7 +58,14 @@ $(document).ready(function() {
   
 /** =LENS CALCULATIONS
 ************************************************************/
-
+$('input.kreading').blur(function() {
+  var kval = parseFloat($(this).val());
+  if (kval >= 6.75 && kval <= 8.65) {
+    kval = FM.diopterRadiusConvert(kval);
+    
+    $(this).val(FM.displayNumber(kval, {plusSign: ''}));
+  }
+});
   $('#convert')
   .tinyvalidate({
     submitOverride: function() {
