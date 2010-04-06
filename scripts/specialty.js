@@ -86,14 +86,14 @@ $(document).ready(function() {
           name: 'base-curve',
           value: function(e) {
             var basecurve = FM.renovation.baseCurve(e);
-            return FM.round(basecurve, .01);
+            return basecurve;//FM.round(basecurve, .01);
           },
           displayOptions: {plusSign: ''}
         },
         {
           name: 'first-power',
           value: function(e) {
-            return FM.renovation.firstpower(e);
+            return FM.renovation.firstPower(e);
           },
           displayOptions: {}
         },
@@ -113,7 +113,7 @@ $(document).ready(function() {
         }
 
       ],
-      toricCalcs: function() {
+      toricCalcs: function(e) {
         var $bi   = $('#result-toric').find('.bi'),
             $back = $('#result-toric').find('.back');
 
@@ -123,7 +123,8 @@ $(document).ready(function() {
 
         $back.find('.result-base-curve-2 span').html( function() {
           var bc2 = FM.baseCurve({
-            position: 'second'
+            position: 'second',
+            e: e
           });
           bc2 = FM.round(bc2, .01);
           return FM.displayNumber(bc2, {plusSign: ''});
@@ -132,14 +133,15 @@ $(document).ready(function() {
         $bi.find('.result-base-curve-2 span').html( function() {
           var bc2 = FM.baseCurve({
             position: 'second',
-            torictype: 'bi'
+            torictype: 'bi',
+            e: e
           });
           bc2 = FM.round(bc2, .01);
           return FM.displayNumber(bc2, {plusSign: ''});
         });
 
         $bi.find('.result-second-power span').html( function() {
-          var secondPower = FM.secondPower();
+          var secondPower = FM.renovation.secondPower(e);
           return FM.displayNumber(secondPower);
         });
 
@@ -228,7 +230,7 @@ $(document).ready(function() {
 
     /* deal with special case: renovation toric lenses */
     if (/renovation/.test(formClass) && context == 'toric') {
-      FM.forms.renovation.toricCalcs();
+      FM.forms.renovation.toricCalcs(e);
     }
   };
 

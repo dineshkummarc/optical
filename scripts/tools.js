@@ -105,6 +105,13 @@ $(document).ready(function() {
           }
           return lens;
         },
+        renovation: function() {
+          var lens = 'single';
+          if (fm.kdiff() > 2.75) {
+            lens = 'toric';
+          }
+          return lens;
+        },
         intelliwave: function() {
           var lens = fm.addpower.val() ? 'multifocal' : 'aspheric';
           var secondPower = fm.power(fm.pow2, {convertVertex: false});
@@ -171,7 +178,8 @@ $(document).ready(function() {
       var defaults = {
         position: 'first',
         torictype: 'back',
-        units: 'radius'
+        units: 'radius',
+        e: false
       };
       var opts = $.extend({}, defaults, options);
       
@@ -191,6 +199,9 @@ $(document).ready(function() {
         diopters += fm.fittingAdjustment();
       }
       
+      if (opts.e) {
+        diopters += .5;
+      }
       if (opts.units == 'diopters') {
         return diopters;
       }
@@ -283,6 +294,15 @@ $(document).ready(function() {
         }
         return this.round(pow, .25);
     },
+    salmonflap: function(num, add) {
+      add = add || 0;
+      if (num > 0) {
+        num += add;
+      } else {
+        num -= add;
+      }
+      return num;
+    },
     
     thinsite: {},
     renovation: {},
@@ -361,13 +381,14 @@ $(document).ready(function() {
   /* RENOVATION(E) CALCULATIONS */
   
   fm.renovation.baseCurveAdjustment = function(e) {
-    var kdiff = fm.kdiff(),
-        adjustment = e ? 1 : .5;
+    var kdiff = fm.kdiff();
     
-    if (kdiff <= 1.25) {
-      adjustment = e ? .5 : 0;
+    if (kdiff <= 1.25 || kdiff > 2.75) {
+      var adjustment = e ? .5 : 0;
     } else if (kdiff <= 2.25) {
-      adjustment = e ? .75 : .25;
+      var adjustment = e ? .75 : .25;
+    } else if (kdiff <= 2.75) {
+      var adjustment = e ? 1 : .5;
     }
     return adjustment;
   };
@@ -378,7 +399,8 @@ $(document).ready(function() {
     var adjustment = fm.renovation.baseCurveAdjustment(e);
     var basecurve = flatk + adjustment;
     if (basecurve != 0) {
-      return  fm.diopterRadiusConvert(basecurve, .05);
+      // TODO: Change this back to .05?
+      return  fm.diopterRadiusConvert(basecurve, .01);
     }
     return 0;
   };
@@ -411,20 +433,24 @@ $(document).ready(function() {
   };
 
   // firstpower (aka distance power)
-  fm.renovation.firstpower = function(e) {
+  fm.renovation.firstPower = function(e) {
     e = e || false;
     
-    /* FIXME: are we supposed to convert vertext here????? */
     var pow = fm.power(fm.pow1);
     var adjustment = fm.renovation.baseCurveAdjustment(e);
 
-    // subtract adjustment from power
+    // subtract "tear layer" adjustment from power
     pow -= adjustment;
     
     // round "up" to nearest .25
-    return fm.roundingAdjustment(pow);
+    return pow;
   };
-  
+  // secondpower
+  fm.renovation.secondPower = function(e) {
+    e = e || false;
+    var pow = FM.secondPower();
+    return e ? fm.salmonflap(pow, .5) : pow;
+  };
   fm.renovation.nearAddPower = function() {
     if (fm.addpower.val() === '') {
       return '';
