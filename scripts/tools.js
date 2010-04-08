@@ -35,7 +35,7 @@ $(document).ready(function() {
           pow = -pow;
         }
       }
-      
+
       var adjust = 'plus';
 
       if (math.abs(pow) < 4.25 || opts.convertVertex === false) {
@@ -49,8 +49,9 @@ $(document).ready(function() {
         pow = '' + pow;
       }
       pow = this.round(pow, .25);
-      
-      pow = utils.vertex[pow][adjust];
+      if (pow in utils.vertex) {
+        pow = utils.vertex[pow][adjust];
+      }
 
       return +pow;
     },
@@ -84,10 +85,10 @@ $(document).ready(function() {
     lensType: function(special) {
       special = special || 'standard';
       var ax = this.adjustedAxis();
-      
+
       var lensTypes = {
         standard: function() {
-          // start out with a "front toric" lens, only if the axis is between 31 and 149; 
+          // start out with a "front toric" lens, only if the axis is between 31 and 149;
           // otherwise single
           if (ax > 30 && ax < 150) {
             var lens = 'front-toric';
@@ -115,7 +116,7 @@ $(document).ready(function() {
         intelliwave: function() {
           var lens = fm.addpower.val() ? 'multifocal' : 'aspheric';
           var secondPower = fm.power(fm.pow2, {convertVertex: false});
-          
+
           if ( secondPower <= -.75 ) {
             lens += '-toric';
           }
@@ -128,7 +129,7 @@ $(document).ready(function() {
       } else {
         return lensTypes['standard']();
       }
-      
+
     },
 
     showBackToric: function() {
@@ -136,11 +137,11 @@ $(document).ready(function() {
       if (this.lensType() !== 'toric') {
         return false;
       }
-      
-      // - need at least 1.25 diopters difference between base curves. 
+
+      // - need at least 1.25 diopters difference between base curves.
       var bcFirst = this.baseCurve({units: 'diopters'});
       var bcSecond = this.baseCurve({units: 'diopters', position: 'second'});
-      
+
 
 
       if (math.abs(bcSecond-bcFirst) < 1.25) {
@@ -148,10 +149,10 @@ $(document).ready(function() {
       }
       // - 2nd base curve needs to be .75 diopters less than or equal to steep K reading
       var steepK = this.kvalue('steep');
-      
+
       return bcSecond - steepK <= -.75;
     },
-    
+
     fittingAdjustment: function() {
       var kd = fm.kdiff();
       var adjustment = 0;
@@ -164,7 +165,7 @@ $(document).ready(function() {
       }
       return adjustment;
     },
-    
+
     diopterRadiusConvert: function(val, roundto) {
       val = parseFloat(val);
       var radius = 337.5 / ( val );
@@ -173,7 +174,7 @@ $(document).ready(function() {
       }
       return radius;
     },
-    
+
     baseCurve: function(options) {
       var defaults = {
         position: 'first',
@@ -182,9 +183,9 @@ $(document).ready(function() {
         e: false
       };
       var opts = $.extend({}, defaults, options);
-      
+
       var diopters = fm.kvalue('flat'); // + fm.fittingAdjustment();
-            
+
       if (opts.position == 'second') {
         if (opts.torictype == 'bi') {
           diopters = fm.kvalue('steep') - 1;
@@ -192,33 +193,33 @@ $(document).ready(function() {
           var p2 = num(this.pow2);
           p2 = this.round(p2/1.5, .125);
           p2 = math.abs(p2);
-          
+
           diopters = p2 + diopters;
         }
       } else if (this.lensType() == 'single' ) {
         diopters += fm.fittingAdjustment();
       }
-      
+
       if (opts.e) {
         diopters += .5;
       }
       if (opts.units == 'diopters') {
         return diopters;
       }
-      
+
       /* return diopters converted to radius and rounded to nearest hundredth  */
       return this.diopterRadiusConvert( diopters, .01 );
 
     },
-    
+
     empiricalFitting: function() {
       var fitting = {opticZone: 'Out of range', diameter: 'Out of range'};
       var baseCurve = this.round(this.baseCurve(), .1);
-      
+
       $.extend(fitting, utils.empiricalFitting[baseCurve]);
       return fitting;
     },
-    
+
     round: function(num, increment) {
       increment = increment*1;
       if (isNaN(parseFloat(num))) {
@@ -229,16 +230,16 @@ $(document).ready(function() {
         pos = false;
       }
       num = '' + num;
-      
+
       var integ = math.abs(parseInt(num, 10));
       var dec = (num.split('.')[1] || 0);
       dec = parseFloat('.' + dec);
-      
-      var rounded = integ + (Math.round(dec / increment) * increment);
-      return pos ? rounded : rounded * -1;
 
+      var rounded = integ + (Math.round(dec / increment) * increment);
+
+      return pos ? rounded : rounded * -1;
     },
-    
+
     adjustedAxis: function() {
       var axis = num(this.axis);
       if (num(this.pow2) > 0) {
@@ -246,7 +247,7 @@ $(document).ready(function() {
       }
       return axis;
     },
-    
+
     /* prettify numbers for displaying on the page */
     displayNumber: function(num, options) {
       var defaults = {
@@ -255,11 +256,11 @@ $(document).ready(function() {
         suppressZero: false
       };
       var opts = $.extend({}, defaults, options);
-      
+
       var trimTo = opts.decimalPlaces,
           plusSign = opts.plusSign,
           zeros = '';
-      
+
       if (opts.suppressZero && num == '') {
         return '';
       }
@@ -267,15 +268,15 @@ $(document).ready(function() {
       if (plusSign && num*1 > 0) {
         num = plusSign + num;
       } else {
-        num = '' + num;  
+        num = '' + num;
       }
 
       var regTrim = new RegExp( '(\\.\\d{' + trimTo + '})\\d+' );
       num = num.replace(regTrim, '$1');
-      
+
       var point = num.indexOf('.');
       var places = num.slice(point).length - 1;
-      
+
       while (places++ < trimTo) {
         zeros += '0';
       }
@@ -303,7 +304,7 @@ $(document).ready(function() {
       }
       return num;
     },
-    
+
     thinsite: {},
     renovation: {},
     intelliwave: {},
@@ -322,11 +323,11 @@ $(document).ready(function() {
     } else if (flatk <= 45.5) {
       diameter = 9;
     }
-  
+
     return diameter;
   };
-  
- 
+
+
   fm.thinsite.baseCurveAdjustment = function() {
     var diameter = fm.thinsite.diameter();
     if (diameter == 'Out of range') {
@@ -344,13 +345,14 @@ $(document).ready(function() {
 
     return utils.flatk.thinsite[diameter][cylinderPosition];
   };
-  
+
   /* Calculate base curve for Thinsite *OR ACHIEVEMENT*  */
   fm.thinsite.baseCurve = function(options) {
     var opts = $.extend({design: 'thinsite'}, options);
-    
+
     var flatk = fm.kvalue('flat');
     var adjustment = fm[opts.design].baseCurveAdjustment();
+
     if ( isNaN(parseFloat(adjustment)) ) {
       return 'Diameter cannot be calculated (base curve out of range)';
     }
@@ -362,27 +364,27 @@ $(document).ready(function() {
     }
     return basecurve;
   };
-  
+
   /* Calculate power for Thinsite *OR ACHIEVEMENT*  */
   fm.thinsite.power = function(options) {
     var opts = $.extend({design: 'thinsite'}, options);
-    
+
     var pow = fm.power(fm.pow1);
     var adjustment = fm[opts.design].baseCurveAdjustment();
 
-    pow = pow - adjustment;
+    pow = fm.salmonflap(pow, adjustment);
     if (pow < -30 || pow > 20 || isNaN(pow)) {
       return 'Power not available for this design. Contact Art Optical for consultation';
     }
 
     return fm.roundingAdjustment(pow);
   };
-  
+
   /* RENOVATION(E) CALCULATIONS */
-  
+
   fm.renovation.baseCurveAdjustment = function(e) {
     var kdiff = fm.kdiff();
-    
+
     if (kdiff <= 1.25 || kdiff > 2.75) {
       var adjustment = e ? .5 : 0;
     } else if (kdiff <= 2.25) {
@@ -392,7 +394,7 @@ $(document).ready(function() {
     }
     return adjustment;
   };
-  
+
   fm.renovation.baseCurve = function(e) {
     e = e || false;
     var flatk = fm.kvalue('flat');
@@ -404,19 +406,19 @@ $(document).ready(function() {
     }
     return 0;
   };
-  
+
   fm.renovation.diameter = function(e) {
     e = e || false;
     var diameter = 'Out of range';
     var basecurve = fm.renovation.baseCurve(e);
-    
+
     var tooFlat = basecurve < 6.9,
         tooSteep = e ? basecurve > 9 : basecurve > 8.5;
 
     if (tooFlat || tooSteep) {
       return diameter;
     }
-    
+
     if (basecurve <= 7.15) {
       diameter = 9;
     } else if (basecurve <= 7.45) {
@@ -428,20 +430,20 @@ $(document).ready(function() {
     } else if (basecurve <= 8.5) {
       diameter = 10;
     }
-  
+
     return diameter;
   };
 
   // firstpower (aka distance power)
   fm.renovation.firstPower = function(e) {
     e = e || false;
-    
+
     var pow = fm.power(fm.pow1);
     var adjustment = fm.renovation.baseCurveAdjustment(e);
 
     // subtract "tear layer" adjustment from power
     pow -= adjustment;
-    
+
     // round "up" to nearest .25
     return pow;
   };
@@ -456,42 +458,42 @@ $(document).ready(function() {
       return '';
     }
     var addPower = num(fm.addpower);
-    
+
     return addPower > 2.5 ? 3 : addPower + .5;
   };
-  
+
   /** =INTELLIWAVE **/
-  
+
   fm.intelliwave.baseCurve = function() {
     var flatk = fm.kvalue('flat');
     var toric = fm.lensType('intelliwave').indexOf('toric') > -1;
-    
+
     var baseCurve = fm.diopterRadiusConvert(flatk);
-    
+
     baseCurve = fm.round(baseCurve, .1);
-    
+
     baseCurve += 1;
- 
+
     var secondPower = math.abs( fm.power(fm.pow2, {
        convertVertex: !toric,
        shiftPositive: false
      }) ),
         secondPower = math.floor(secondPower);
-    
+
     if (secondPower >= 2) {
       var powerDiff = (secondPower - 1) * .1;
-      
+
       baseCurve -= powerDiff;
     }
     return baseCurve;
   };
-  
+
   fm.intelliwave.power = function() {
     var lenstype = fm.lensType('intelliwave');
     var powerOptions = {shiftPositive: false, convertVertex: true};
     var pow1 = fm.power(fm.pow1, powerOptions);
-    
-    
+
+
     if ( lenstype.indexOf('toric') > -1 ) {
       powerOptions.convertVertex = false;
       var pow2 = fm.power(fm.pow2, powerOptions);
@@ -504,26 +506,29 @@ $(document).ready(function() {
       } else if (pow2 <= -2) {
         adjustment = .25;
       }
-      
+
       pow2 += adjustment;
-      
+
     } else {
-      var pow2 = fm.power(fm.pow2, powerOptions);  
+      var pow2 = fm.power(fm.pow2, powerOptions);
     }
-    
+
     // round "up" to nearest .25
     pow1 = fm.roundingAdjustment(pow1);
     pow2 = fm.roundingAdjustment(pow2);
-    
-    var powers = fm.displayNumber(pow1) + ' ' + fm.displayNumber(pow2);
-    return powers + ' x ' + fm.axis.val();
+
+    var output = fm.displayNumber(pow1) + ' '; 
+    if (lenstype == 'aspheric-toric') {
+      output += fm.displayNumber(pow2) + ' x ' + fm.axis.val();
+    } 
+    return output;
   };
-  
+
   /* ACHIEVEMENT */
   fm.achievement.baseCurveAdjustment = function() {
     var kdiff = fm.kdiff(),
         adjustment = 'Out of range';
-    
+
     /* FIXME: verify plus and minus in these adjustments... */
     if (kdiff <= .25) {
       adjustment = -.25;
@@ -531,12 +536,12 @@ $(document).ready(function() {
       adjustment = 0;
     } else if (kdiff <= 1.75) {
       adjustment = .25;
-    } else if (kdiff < 2.5) {
+    } else if (kdiff <= 2.5) {
       adjustment = .5;
     }
     return adjustment;
   };
-  
+
   FM = fm;
 
 
@@ -647,8 +652,8 @@ $(document).ready(function() {
       "10": [-.5, -.25, 0, .25]
     }
   };
-  
-  
+
+
   FM.vertex = utils.vertex;
 });
 

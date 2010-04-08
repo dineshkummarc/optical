@@ -153,7 +153,9 @@ $(document).ready(function() {
           name: 'base-curve',
           value: function() {
             return FM.intelliwave.baseCurve();
-          }
+          },
+          displayOptions: {}
+          
         },
         {
           name: 'diameter',
@@ -163,8 +165,7 @@ $(document).ready(function() {
           name: 'power',
           value: function() {
             return FM.intelliwave.power();
-          },
-          displayOptions: {}
+          }
         },
         {
           name: 'near-add-power',
@@ -227,7 +228,7 @@ $(document).ready(function() {
       }
       $context.find('div.result-' + outputs[i].name + ' span').html( output );
     }
-
+console.log(context);
     /* deal with special case: renovation toric lenses */
     if (/renovation/.test(formClass) && context == 'toric') {
       FM.forms.renovation.toricCalcs(e);
@@ -238,6 +239,9 @@ $(document).ready(function() {
   ************************************************************/
 
   $('#convert')
+  .submit(function(event) {
+    event.preventDefault();
+  })
   .tinyvalidate({
     submitOverride: function() {
 
@@ -272,6 +276,15 @@ $.tinyvalidate.rules.kreading = {
         ? 'This cornea may have keratoconus. Please contact Art Optical for a consultation.'
         : 'This cornea may be post surgical. Please contact Art Optical for a consultation.';
   }
+};
+
+$.tinyvalidate.rules.power = {
+  ruleClass: 'power',
+  rule: function(r) {
+    r = parseFloat(r);
+    return Math.abs(r) <= 35;
+  }, 
+  text: 'This power is out of range. Please contact Art Optical for a consultation.'
 };
 
 $.tinyvalidate.rules.range = {
