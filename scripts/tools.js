@@ -366,7 +366,13 @@ $(document).ready(function() {
     }
     return basecurve;
   };
-
+  fm.thinsite.baseCurveOut = function() {
+    if (fm.k1.val() && fm.k2.val()) {
+      var bco = fm.thinsite.baseCurve();
+      return isNaN(bco) ? bco : false;
+    }
+    return false;
+  };
   /* Calculate power for Thinsite *OR ACHIEVEMENT*  */
   fm.thinsite.power = function(options) {
     var opts = $.extend({design: 'thinsite'}, options);

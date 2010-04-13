@@ -266,15 +266,25 @@ $.tinyvalidate.rules.required = {
 
 $.tinyvalidate.rules.kreading = {
   ruleClass: 'kreading',
-  rule: function(r) {
-    r = parseFloat(r);
-    return r <= 50 && r >= 39;
+  rule: function(el) {
+    var bco = FM.thinsite.baseCurveOut();
+    el.data('bcOut', bco);
+    var r = parseFloat(el.val());
+    r = (r <= 50 && r >= 39);
+    if (!r) {
+      el.removeData('bcOut');
+    }
+    return r && !bco;
   },
   text: function() {
+    if ($(this).data('bcOut')) {
+      return $(this).data('bcOut');
+    }
     return  parseFloat(this.value) > 50 
         ? 'This cornea may have keratoconus. Please contact Art Optical for a consultation.'
         : 'This cornea may be post surgical. Please contact Art Optical for a consultation.';
-  }
+  },
+  check: 'element'
 };
 
 $.tinyvalidate.rules.power = {
