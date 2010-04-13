@@ -228,7 +228,6 @@ $(document).ready(function() {
       }
       $context.find('div.result-' + outputs[i].name + ' span').html( output );
     }
-console.log(context);
     /* deal with special case: renovation toric lenses */
     if (/renovation/.test(formClass) && context == 'toric') {
       FM.forms.renovation.toricCalcs(e);
@@ -282,9 +281,9 @@ $.tinyvalidate.rules.power = {
   ruleClass: 'power',
   rule: function(r) {
     r = parseFloat(r);
-    return Math.abs(r) <= 35;
+    return Math.abs(r) <= 20;
   }, 
-  text: 'This power is out of range. Please contact Art Optical for a consultation.'
+  text: 'The power exceeds design limitations. Please contact Art Optical\'s consultation department for further assistance.'
 };
 
 $.tinyvalidate.rules.range = {

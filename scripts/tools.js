@@ -149,8 +149,7 @@ $(document).ready(function() {
       }
       // - 2nd base curve needs to be .75 diopters less than or equal to steep K reading
       var steepK = this.kvalue('steep');
-
-      return bcSecond - steepK <= -.75;
+      return bcSecond <= steepK && bcSecond - steepK >= -.75;
     },
 
     fittingAdjustment: function() {
@@ -215,7 +214,6 @@ $(document).ready(function() {
     empiricalFitting: function() {
       var fitting = {opticZone: 'Out of range', diameter: 'Out of range'};
       var baseCurve = this.round(this.baseCurve(), .1);
-
       $.extend(fitting, utils.empiricalFitting[baseCurve]);
       return fitting;
     },
@@ -264,6 +262,10 @@ $(document).ready(function() {
       if (opts.suppressZero && num == '') {
         return '';
       }
+      if ( isNaN( parseFloat(num) ) ) {
+        return num;
+      }
+
       num = parseFloat(num);
       if (plusSign && num*1 > 0) {
         num = plusSign + num;
@@ -320,7 +322,7 @@ $(document).ready(function() {
       diameter = 10;
     } else if (flatk <= 42.5) {
       diameter = 9.5;
-    } else if (flatk <= 45.5) {
+    } else if (flatk <= 48.25) {
       diameter = 9;
     }
 
@@ -628,6 +630,7 @@ $(document).ready(function() {
   };
 
   utils.empiricalFitting = {
+    "7": {opticZone: "7.6", diameter: "9.0"},
     "7.1": {opticZone: "7.6", diameter: "9.0"},
     "7.2": {opticZone: "7.6", diameter: "9.0"},
     "7.3": {opticZone: "7.6", diameter: "9.0"},

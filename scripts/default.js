@@ -213,10 +213,11 @@ $.tinyvalidate.rules.power = {
   ruleClass: 'power',
   rule: function(r) {
     r = parseFloat(r);
-    return Math.abs(r) <= 35;
+    return Math.abs(r) <= 20;
   },
-  text: 'This power is out of range. Please contact Art Optical for a consultation.'
+  text: 'The power exceeds design limitations. Please contact Art Optical\'s consultation department for further assistance.'
 };
+
 $.tinyvalidate.rules.range = {
   ruleClass: 'range',
   rule: function(el) {
